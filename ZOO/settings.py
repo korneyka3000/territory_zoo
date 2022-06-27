@@ -81,8 +81,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'territory_zoo',
-        'USER': 'korney',
-        'PASSWORD': 'ygvuhb1989',
+        'USER': 'USERNAME',
+        'PASSWORD': 'PASSWORD',
         'HOST': 'localhost',
         # 'PORT': '5432'
     }
