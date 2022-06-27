@@ -14,7 +14,8 @@ class Product(models.Model):
         ('шт.', 'шт.'),
     )
     name = models.CharField(verbose_name='Название товара', max_length=150, blank=False, null=False)
-    image = ArrayField(models.ImageField(verbose_name='Изображение товара', blank=True, upload_to='photos_products/Y/M/'))
+    # image = ArrayField(models.ImageField(verbose_name='Изображение товара', blank=True,
+    #                                      upload_to='photos_products/Y/M/'), blank=True, null=True)
     description = models.TextField(verbose_name='Описание товара')
     features = models.TextField(verbose_name='Ключевые особенности')
     composition = models.TextField(verbose_name='Состав')
@@ -30,8 +31,24 @@ class Product(models.Model):
     brand = models.ForeignKey('Brand', on_delete=models.PROTECT)
     product_type = models.ForeignKey('ProductType', on_delete=models.PROTECT)
 
+    class Meta:
+        verbose_name = 'Товар'
+        verbose_name_plural = 'Товары'
+
     def __str__(self):
         return self.name
+
+
+class Images(models.Model):
+    product = models.ForeignKey('Product', on_delete=models.PROTECT)
+    image = models.ImageField(verbose_name='Изображение товара', blank=True, upload_to='photos_products/Y/M/')
+
+    class Meta:
+        verbose_name = 'Фотография товара'
+        verbose_name_plural = 'Фотографии товаров'
+
+    def __str__(self):
+        return self.product.name
 
 
 class Animal(models.Model):
@@ -62,8 +79,12 @@ class Brand(models.Model):
 
 class ProductType(models.Model):
     """Тип/типы товара"""
-    name = models.CharField(verbose_name='Тип товара', max_length=30, blank=False, null=False)
+    name = models.CharField(verbose_name='Категория товара', max_length=30, blank=False, null=False)
     is_active = models.BooleanField(verbose_name='Активно', default=True)
+
+    class Meta:
+        verbose_name = 'Категория'
+        verbose_name_plural = 'КАТЕГОРИИ'
 
     def __str__(self):
         return self.name
@@ -76,6 +97,10 @@ class ProductOptions(models.Model):
     size = models.PositiveIntegerField(verbose_name='Объём/Масса/Штук', blank=False, null=False)
     count = models.PositiveIntegerField(verbose_name='Остаток на складе')
     is_active = models.BooleanField(verbose_name='Активно', default=True)
+
+    class Meta:
+        verbose_name = 'Вариант фасовки'
+        verbose_name_plural = 'ВАРИАНТЫ ФАСОВКИ'
 
     def __str__(self):
         return f'{self.product.name}, {self.size}, {self.price}, {self.count}'
