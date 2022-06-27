@@ -1,6 +1,11 @@
+# from rest_framework.authtoken.admin import User
+# from rest_framework.permissions import AllowAny
+# from rest_framework.schemas import SchemaGenerator
+# from rest_framework.views import APIView
+# from rest_framework_swagger import renderers
+
 from .models import Product
 from django.shortcuts import get_object_or_404
-# from myapps.serializers import UserSerializer
 from rest_framework import viewsets
 from rest_framework.response import Response
 from .serializers import ProductSerializer
@@ -17,3 +22,18 @@ class ProductViewSet(viewsets.ViewSet):
         user = get_object_or_404(queryset, pk=pk)
         serializer = ProductSerializer(user)
         return Response(serializer.data)
+
+
+# class SwaggerSchemaView(APIView):
+#     permission_classes = [AllowAny]
+#     renderer_classes = [
+#         renderers.OpenAPIRenderer,
+#         renderers.SwaggerUIRenderer
+#     ]
+#
+#     def get(self, request):
+#         generator = SchemaGenerator()
+#         schema = generator.get_schema(request=request)
+#
+#         return Response(schema)
+
