@@ -13,12 +13,10 @@ class PostAdmin(admin.ModelAdmin):
     class Meta:
         model = Product
 
-
 @admin.register(Images)
 class PostImageAdmin(admin.ModelAdmin):
     pass
-# admin.site.register(Product)
-# admin.site.register(Images)
+
 admin.site.register(Animal)
 admin.site.register(Brand)
 admin.site.register(ProductType)
