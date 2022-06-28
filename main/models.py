@@ -40,9 +40,9 @@ class Product(models.Model):
         return self.name
 
     def body_description(self):
-        return u"%s..." % (self.description[:100],)
+        return u"%s..." % (self.description[:150],)
 
-    body_description.short_description = 'Описание статьи'
+    body_description.short_description = 'Описание товара'
 
 
 class Images(models.Model):
@@ -138,7 +138,7 @@ class Article(models.Model):
         return self.title
 
     def body_description(self):
-        return u"%s..." % (self.description[:100],)
+        return u"%s..." % (self.description[:150],)
 
     body_description.short_description = 'Описание статьи'
 
