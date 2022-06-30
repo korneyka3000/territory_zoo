@@ -1,13 +1,8 @@
-# from rest_framework.authtoken.admin import User
-# from rest_framework.permissions import AllowAny
-# from rest_framework.schemas import SchemaGenerator
-# from rest_framework.views import APIView
-# from rest_framework_swagger import renderers
-
-from .models import Product, Brand, Animal, Category
+from .models import Product, Brand, Animal, Category, ProductOptions
 from rest_framework import viewsets
 from rest_framework.response import Response
-from .serializers import ProductSerializer, BrandSerializer, AnimalSerializer, CategorySerializer
+from .serializers import ProductSerializer, BrandSerializer, AnimalSerializer, CategorySerializer, \
+    ProductOptionsSerializer
 
 
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
@@ -34,3 +29,7 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = CategorySerializer
 
 
+class ProductOptionsViewSet(viewsets.ReadOnlyModelViewSet):
+
+    queryset = ProductOptions.objects.all()
+    serializer_class = ProductOptionsSerializer
