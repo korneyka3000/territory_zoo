@@ -54,15 +54,15 @@ class ProductOptionsAdmin(admin.ModelAdmin):
 admin.site.register(ProductOptions, ProductOptionsAdmin)
 
 
-# class ProductAdmin(admin.ModelAdmin):
-#     """Вариант фасовки"""
-#     list_display = 'name', 'brand', 'animal', 'body_description', 'unit', 'date_added', 'is_active',
-#     list_editable = 'is_active',
-#     list_filter = 'date_added', 'animal', 'brand', 'is_active',
-#     list_per_page = 20
-#
-#
-# admin.site.register(Product, ProductAdmin)
+class ProductAdmin(admin.ModelAdmin):
+    """Вариант фасовки"""
+    list_display = 'name', 'brand', 'body_description', 'unit', 'date_added', 'is_active',
+    list_editable = 'is_active',
+    list_filter = 'date_added', 'animal', 'brand', 'is_active',
+    list_per_page = 20
+
+
+admin.site.register(Product, ProductAdmin)
 
 
 class CategoryAdmin(admin.ModelAdmin):
