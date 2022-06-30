@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Product, Brand, Animal, ProductType, ProductOptions, Info, Article
+from .models import Product, Brand, Animal, Category, ProductOptions, Info, Article
 
 
 class BrandAdmin(admin.ModelAdmin):
@@ -54,24 +54,24 @@ class ProductOptionsAdmin(admin.ModelAdmin):
 admin.site.register(ProductOptions, ProductOptionsAdmin)
 
 
-class ProductAdmin(admin.ModelAdmin):
-    """Вариант фасовки"""
-    list_display = 'name', 'brand', 'animal', 'body_description', 'unit', 'date_added', 'is_active',
-    list_editable = 'is_active',
-    list_filter = 'date_added', 'animal', 'brand', 'is_active',
-    list_per_page = 20
+# class ProductAdmin(admin.ModelAdmin):
+#     """Вариант фасовки"""
+#     list_display = 'name', 'brand', 'animal', 'body_description', 'unit', 'date_added', 'is_active',
+#     list_editable = 'is_active',
+#     list_filter = 'date_added', 'animal', 'brand', 'is_active',
+#     list_per_page = 20
+#
+#
+# admin.site.register(Product, ProductAdmin)
 
 
-admin.site.register(Product, ProductAdmin)
-
-
-class ProductTypeAdmin(admin.ModelAdmin):
-    """Типы товара"""
+class CategoryAdmin(admin.ModelAdmin):
+    """Категории товара"""
     list_display = 'name', 'is_active',
     list_editable = 'is_active',
 
 
-admin.site.register(ProductType, ProductTypeAdmin)
+admin.site.register(Category, CategoryAdmin)
 
 # class ProductAdmin(admin.ModelAdmin):
 #     """Товары магазина"""

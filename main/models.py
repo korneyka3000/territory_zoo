@@ -28,10 +28,9 @@ class Product(models.Model):
                             blank=False)
     date_added = models.DateField(verbose_name='Дата добавления', auto_now_add=True)
     is_active = models.BooleanField(verbose_name='Активен', default=True)
-    animal = models.ForeignKey('Animal', related_name='products', verbose_name='Тип животного',
-                               on_delete=models.PROTECT)
+    animal = models.ManyToManyField('Animal', related_name='products', verbose_name='Тип животного')
     brand = models.ForeignKey('Brand', related_name='products', verbose_name='Бренд', on_delete=models.PROTECT)
-    product_type = models.ForeignKey('ProductType', related_name='products', verbose_name='Категория',
+    product_type = models.ForeignKey('Category', related_name='products', verbose_name='Категория',
                                      on_delete=models.PROTECT)
 
     class Meta:
@@ -85,8 +84,8 @@ class Brand(models.Model):
         return self.name
 
 
-class ProductType(models.Model):
-    """Тип/типы товара"""
+class Category(models.Model):
+    """Категории товара"""
     name = models.CharField(verbose_name='Категория товара', max_length=30, blank=False, null=False)
     is_active = models.BooleanField(verbose_name='Активно', default=True)
 

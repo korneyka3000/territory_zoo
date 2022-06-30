@@ -4,25 +4,33 @@
 # from rest_framework.views import APIView
 # from rest_framework_swagger import renderers
 
-from .models import Product
-from django.shortcuts import get_object_or_404
+from .models import Product, Brand, Animal, Category
 from rest_framework import viewsets
 from rest_framework.response import Response
-from .serializers import ProductSerializer
+from .serializers import ProductSerializer, BrandSerializer, AnimalSerializer, CategorySerializer
 
 
-class ProductViewSet(viewsets.ViewSet):
-    def list(self, request):
-        queryset = Product.objects.all()
-        serializer = ProductSerializer(queryset, many=True)
-        return Response(serializer.data)
+class ProductViewSet(viewsets.ReadOnlyModelViewSet):
 
-    def retrieve(self, request, pk=None):
-        queryset = Product.objects.all()
-        user = get_object_or_404(queryset, pk=pk)
-        serializer = ProductSerializer(user)
-        return Response(serializer.data)
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
 
 
+class BrandViewSet(viewsets.ReadOnlyModelViewSet):
+
+    queryset = Brand.objects.all()
+    serializer_class = BrandSerializer
+
+
+class AnimalViewSet(viewsets.ReadOnlyModelViewSet):
+
+    queryset = Animal.objects.all()
+    serializer_class = AnimalSerializer
+
+
+class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
+
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
 
 

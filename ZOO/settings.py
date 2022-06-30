@@ -85,11 +85,11 @@ WSGI_APPLICATION = 'ZOO.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'zoo',
-        'USER': 'oleg',
-        'PASSWORD': '1988',
+        'NAME': 'territory_zoo',
+        'USER': 'korney',
+        'PASSWORD': 'ygvuhb1989',
         'HOST': 'localhost',
-        'PORT': '5432'
+        # 'PORT': '5432'
     }
 }
 
