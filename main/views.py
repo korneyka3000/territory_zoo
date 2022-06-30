@@ -24,16 +24,5 @@ class ProductViewSet(viewsets.ViewSet):
         return Response(serializer.data)
 
 
-# class SwaggerSchemaView(APIView):
-#     permission_classes = [AllowAny]
-#     renderer_classes = [
-#         renderers.OpenAPIRenderer,
-#         renderers.SwaggerUIRenderer
-#     ]
-#
-#     def get(self, request):
-#         generator = SchemaGenerator()
-#         schema = generator.get_schema(request=request)
-#
-#         return Response(schema)
+
 

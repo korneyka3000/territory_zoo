@@ -40,7 +40,7 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'main.apps.MainConfig',
-
+    'rest_framework_swagger',
     'ckeditor_uploader',
     'ckeditor',
 
