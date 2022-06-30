@@ -28,9 +28,10 @@ class Product(models.Model):
                             blank=False)
     date_added = models.DateField(verbose_name='Дата добавления', auto_now_add=True)
     is_active = models.BooleanField(verbose_name='Активен', default=True)
-    animal = models.ForeignKey('Animal', verbose_name='Тип животного', on_delete=models.PROTECT)
-    brand = models.ForeignKey('Brand', verbose_name='Бренд', on_delete=models.PROTECT)
-    product_type = models.ForeignKey('ProductType', verbose_name='Категория', on_delete=models.PROTECT)
+    animal = models.ManyToManyField('Animal', related_name='products', verbose_name='Тип животного')
+    brand = models.ForeignKey('Brand', related_name='products', verbose_name='Бренд', on_delete=models.PROTECT)
+    product_type = models.ForeignKey('Category', related_name='products', verbose_name='Категория',
+                                     on_delete=models.PROTECT)
 
     class Meta:
         verbose_name = 'Товар'
@@ -62,8 +63,6 @@ class Animal(models.Model):
     name = models.CharField(verbose_name='Название животного', max_length=20)
     image = RichTextUploadingField(verbose_name='Изображение животного', blank=True, config_name='custom')
 
-    # image = models.ImageField(verbose_name='Изображение животного', blank=True, upload_to='photos_animal/Y/M/')
-
     class Meta:
         verbose_name = 'Тип животного'
         verbose_name_plural = 'ТИПЫ ЖИВОТНЫХ'
@@ -77,8 +76,6 @@ class Brand(models.Model):
     name = models.CharField(verbose_name='Название бренда', max_length=250)
     image = RichTextUploadingField(verbose_name='Изображение бренда', blank=True, config_name='custom')
 
-    # image = models.ImageField(verbose_name='Изображение бренда', blank=True, upload_to='photos_brand/Y/M/')
-
     class Meta:
         verbose_name = 'Бренд'
         verbose_name_plural = 'БРЕНДЫ'
@@ -87,8 +84,8 @@ class Brand(models.Model):
         return self.name
 
 
-class ProductType(models.Model):
-    """Тип/типы товара"""
+class Category(models.Model):
+    """Категории товара"""
     name = models.CharField(verbose_name='Категория товара', max_length=30, blank=False, null=False)
     is_active = models.BooleanField(verbose_name='Активно', default=True)
 
@@ -102,7 +99,7 @@ class ProductType(models.Model):
 
 class ProductOptions(models.Model):
     """Доступные фасовки для товара(разные фасовки по весу, объёму и тд. ...)"""
-    product = models.ForeignKey('Product', on_delete=models.PROTECT, verbose_name='Продукт')
+    product = models.ForeignKey('Product', related_name='options', on_delete=models.PROTECT, verbose_name='Варианты')
     price = models.DecimalField(verbose_name='Цена', max_digits=8, decimal_places=2)
     size = models.PositiveIntegerField(verbose_name='Объём/Масса/Штук', blank=False, null=False)
     count = models.PositiveIntegerField(verbose_name='Остаток на складе')
