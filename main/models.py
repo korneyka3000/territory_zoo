@@ -30,7 +30,6 @@ class Product(models.Model):
     product_type = models.ForeignKey('Category', related_name='products', verbose_name='Категория',
                                      on_delete=models.PROTECT)
 
-
     class Meta:
         verbose_name = 'Товар'
         verbose_name_plural = 'ТОВАРЫ'
