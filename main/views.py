@@ -48,8 +48,3 @@ class ProductOptionsViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = ProductOptions.objects.all()
     serializer_class = ProductOptionsSerializer
-
-
-
-# @api_view(['GET'])
-# def my_view(request)
