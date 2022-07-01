@@ -16,14 +16,11 @@ class Product(models.Model):
     )
     name = models.CharField(verbose_name='Название товара', max_length=150, blank=False, null=False)
     description = RichTextField(verbose_name='Описание товара')
-    # description = models.TextField(verbose_name='Описание товара')
-    # features = models.TextField(verbose_name='Ключевые особенности')
-    # composition = models.TextField(verbose_name='Состав')
-    # additives = models.TextField(verbose_name='Пищевые добавки')
-    # analysis = models.TextField(verbose_name='Гарантированный анализ')
-    # options = models.JSONField(verbose_name='Варианты товара')
-    # image = ArrayField(models.ImageField(verbose_name='Изображение товара', blank=True,
-    #                                      upload_to='photos_products/Y/M/'), blank=True, null=True)
+    features = RichTextField(verbose_name='Ключевые особенности')
+    composition = RichTextField(verbose_name='Состав')
+    additives = RichTextField(verbose_name='Пищевые добавки')
+    analysis = RichTextField(verbose_name='Гарантированный анализ')
+    image = RichTextUploadingField(verbose_name='Изображение товара', blank=True, config_name='custom')
     unit = models.CharField(verbose_name='Единица измерения', max_length=10, choices=UNIT_OF_MEASUREMENT_CHOICES,
                             blank=False)
     date_added = models.DateField(verbose_name='Дата добавления', auto_now_add=True)
@@ -32,6 +29,7 @@ class Product(models.Model):
     brand = models.ForeignKey('Brand', related_name='products', verbose_name='Бренд', on_delete=models.PROTECT)
     product_type = models.ForeignKey('Category', related_name='products', verbose_name='Категория',
                                      on_delete=models.PROTECT)
+
 
     class Meta:
         verbose_name = 'Товар'
@@ -44,18 +42,6 @@ class Product(models.Model):
         return u"%s..." % (self.description[:150],)
 
     body_description.short_description = 'Описание товара'
-
-
-class Images(models.Model):
-    product = models.ForeignKey('Product', on_delete=models.PROTECT)
-    image = models.ImageField(verbose_name='Изображение товара', blank=True, upload_to='photos_products/Y/M/')
-
-    class Meta:
-        verbose_name = 'Фотография товара'
-        verbose_name_plural = 'ФОТОГРАФИИ ТОВАРОВ'
-
-    def __str__(self):
-        return self.product.name
 
 
 class Animal(models.Model):
@@ -119,9 +105,7 @@ class Article(models.Model):
     title = models.CharField(verbose_name='Название статьи', max_length=200)
     animals = models.ForeignKey(Animal, verbose_name='Название животного', on_delete=models.PROTECT)
     description = RichTextField(verbose_name='Описание статьи')
-    # description = models.TextField(verbose_name='Описание статьи')
     image = RichTextUploadingField(blank=True, null=True, verbose_name='Изображение статьи', config_name='custom')
-    # image = models.ImageField(verbose_name='Изображение статьи', blank=True, upload_to='photos_article/Y/M/')
     time_read = models.CharField(verbose_name='Время чтения статьи', max_length=50)
     date_added = models.DateField(verbose_name='Дата добавления статьи', auto_now_add=True)
     is_active = models.BooleanField(verbose_name='Активна', default=True)
@@ -176,3 +160,10 @@ class Info(models.Model):
 
     def __str__(self):
         return f'Адрес: {self.address}, телефон: {self.phone_number}'
+
+
+
+
+
+
+
