@@ -56,7 +56,7 @@ admin.site.register(ProductOptions, ProductOptionsAdmin)
 
 class ProductAdmin(admin.ModelAdmin):
     """Вариант фасовки"""
-    list_display = 'name', 'brand', 'animal', 'body_description', 'unit', 'date_added', 'is_active',
+    list_display = 'name', 'brand', 'body_description', 'unit', 'date_added', 'is_active',
     list_editable = 'is_active',
     list_filter = 'date_added', 'animal', 'brand', 'is_active',
     list_per_page = 20
@@ -73,36 +73,3 @@ class ProductTypeAdmin(admin.ModelAdmin):
 
 admin.site.register(ProductType, ProductTypeAdmin)
 
-# class ProductAdmin(admin.ModelAdmin):
-#     """Товары магазина"""
-#     list_display = 'name', 'description', 'unit', 'product_type', 'animal', 'brand', 'is_active',
-#     # list_editable = 'name', 'published',
-#     # list_display_links = 'title',
-#     # list_filter = 'brands', 'volumes', 'type',
-#     # search_fields = 'title', 'body_description',
-#     list_per_page = 20
-#
-#
-# admin.site.register(Product, ProductAdmin)
-
-
-# class ProductImagesAdmin(admin.StackedInline):
-#     model = Images
-#
-#
-# @admin.register(Product)
-# class PostAdmin(admin.ModelAdmin):
-#     inlines = [ProductImagesAdmin]
-#
-#     class Meta:
-#         model = Product
-#
-#
-# @admin.register(Images)
-# class PostImageAdmin(admin.ModelAdmin):
-#     pass
-#
-#
-# admin.site.register(Animal)
-# admin.site.register(ProductType)
-# admin.site.register(ProductOptions)
