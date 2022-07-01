@@ -24,3 +24,5 @@ simplejson==3.17.6
 sqlparse==0.2.4
 uritemplate==4.1.1
 urllib3==1.26.9
+
+django-filter==22.1

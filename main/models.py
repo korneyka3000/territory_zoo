@@ -27,7 +27,7 @@ class Product(models.Model):
     is_active = models.BooleanField(verbose_name='Активен', default=True)
     animal = models.ManyToManyField('Animal', related_name='products', verbose_name='Тип животного')
     brand = models.ForeignKey('Brand', related_name='products', verbose_name='Бренд', on_delete=models.PROTECT)
-    product_type = models.ForeignKey('Category', related_name='products', verbose_name='Категория',
+    category = models.ForeignKey('Category', related_name='products', verbose_name='Категория',
                                      on_delete=models.PROTECT)
 
     class Meta:
