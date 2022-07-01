@@ -40,3 +40,4 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = '__all__'
         depth = 1
+
