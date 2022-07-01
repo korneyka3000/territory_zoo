@@ -2,7 +2,11 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 from .models import Product, Brand, Animal, Category, ProductOptions
 from rest_framework import viewsets
-from .serializers import ProductSerializer, BrandSerializer, AnimalSerializer, CategorySerializer, ProductOptionsSerializer
+from .serializers import (ProductSerializer,
+                          BrandSerializer,
+                          AnimalSerializer,
+                          CategorySerializer,
+                          ProductOptionsSerializer,)
 
 
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
