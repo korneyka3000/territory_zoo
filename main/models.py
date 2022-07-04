@@ -15,11 +15,11 @@ class Product(models.Model):
         ('шт.', 'шт.'),
     )
     name = models.CharField(verbose_name='Название товара', max_length=150, blank=False, null=False)
-    description = RichTextField(verbose_name='Описание товара')
-    features = RichTextField(verbose_name='Ключевые особенности')
-    composition = RichTextField(verbose_name='Состав')
-    additives = RichTextField(verbose_name='Пищевые добавки')
-    analysis = RichTextField(verbose_name='Гарантированный анализ')
+    description = RichTextField(verbose_name='Описание товара', null=True, blank=True)
+    features = RichTextField(verbose_name='Ключевые особенности', null=True, blank=True)
+    composition = RichTextField(verbose_name='Состав', null=True, blank=True)
+    additives = RichTextField(verbose_name='Пищевые добавки', null=True, blank=True)
+    analysis = RichTextField(verbose_name='Гарантированный анализ', null=True, blank=True)
     image = RichTextUploadingField(verbose_name='Изображение товара', blank=True, config_name='custom')
     unit = models.CharField(verbose_name='Единица измерения', max_length=10, choices=UNIT_OF_MEASUREMENT_CHOICES,
                             blank=False)
@@ -28,7 +28,7 @@ class Product(models.Model):
     animal = models.ManyToManyField('Animal', related_name='products', verbose_name='Тип животного')
     brand = models.ForeignKey('Brand', related_name='products', verbose_name='Бренд', on_delete=models.PROTECT)
     category = models.ForeignKey('Category', related_name='products', verbose_name='Категория',
-                                     on_delete=models.PROTECT)
+                                 on_delete=models.PROTECT)
 
     class Meta:
         verbose_name = 'Товар'
@@ -45,7 +45,7 @@ class Product(models.Model):
 
 class Animal(models.Model):
     """Доступные типы животных для поиска товаров"""
-    name = models.CharField(verbose_name='Название животного', max_length=20)
+    name = models.CharField(verbose_name='Название животного', max_length=20)  # unique=True, db_index=True or add slugfield
     image = RichTextUploadingField(verbose_name='Изображение животного', blank=True, config_name='custom')
 
     class Meta:
@@ -68,10 +68,14 @@ class Brand(models.Model):
     def __str__(self):
         return self.name
 
+    def count_prod(self):
+        return self.products.count()
+
+    count_prod.short_description = 'Количество товаров'
 
 class Category(models.Model):
-    """Категории товара"""
-    name = models.CharField(verbose_name='Категория товара', max_length=30, blank=False, null=False)
+    """Категории товаров"""
+    name = models.CharField(verbose_name='Название категории', max_length=30, blank=False, null=False)
     is_active = models.BooleanField(verbose_name='Активно', default=True)
 
     class Meta:

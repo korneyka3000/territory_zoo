@@ -4,7 +4,7 @@ from .models import Product, Brand, Animal, Category, ProductOptions, Info, Arti
 
 class BrandAdmin(admin.ModelAdmin):
     """Бренды"""
-    list_display = 'name',
+    list_display = 'id', 'name', 'count_prod',
     search_fields = 'name',
     list_per_page = 20
 

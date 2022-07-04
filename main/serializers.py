@@ -9,6 +9,13 @@ class ProductOptionsSerializer(serializers.ModelSerializer):
         exclude = ('product',)
 
 
+class FilterProductSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Product
+        fields = ('id', 'name')
+
+
 class ProductSerializer(serializers.ModelSerializer):
     options = ProductOptionsSerializer(many=True, read_only=True)
 
