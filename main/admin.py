@@ -4,7 +4,7 @@ from .models import Product, Brand, Animal, Category, ProductOptions, Info, Arti
 
 class BrandAdmin(admin.ModelAdmin):
     """Бренды"""
-    list_display = 'id', 'name', 'count_prod',
+    list_display = 'name', 'count_prod', 'id',
     search_fields = 'name',
     list_per_page = 20
 
@@ -56,7 +56,7 @@ admin.site.register(ProductOptions, ProductOptionsAdmin)
 
 class ProductAdmin(admin.ModelAdmin):
     """Вариант фасовки"""
-    list_display = 'name', 'brand', 'body_description', 'unit', 'date_added', 'is_active',
+    list_display = 'name', 'brand', 'body_description', 'unit', 'date_added', 'is_active', 'product_options',
     list_editable = 'is_active',
     list_filter = 'date_added', 'animal', 'brand', 'is_active',
     list_per_page = 20

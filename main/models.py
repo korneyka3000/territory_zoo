@@ -42,10 +42,12 @@ class Product(models.Model):
 
     body_description.short_description = 'Описание товара'
 
+    def product_options(self):
+        return self.options.count()
 
 class Animal(models.Model):
     """Доступные типы животных для поиска товаров"""
-    name = models.CharField(verbose_name='Название животного', max_length=20)  # unique=True, db_index=True or add slugfield
+    name = models.CharField(verbose_name='Название животного', max_length=20, unique=True)  # unique=True, db_index=True or add slugfield
     image = RichTextUploadingField(verbose_name='Изображение животного', blank=True, config_name='custom')
 
     class Meta:
@@ -58,7 +60,7 @@ class Animal(models.Model):
 
 class Brand(models.Model):
     """Бренды товаров доступные в магазине"""
-    name = models.CharField(verbose_name='Название бренда', max_length=250)
+    name = models.CharField(verbose_name='Название бренда', max_length=250, unique=True)
     image = RichTextUploadingField(verbose_name='Изображение бренда', blank=True, config_name='custom')
 
     class Meta:
@@ -75,7 +77,7 @@ class Brand(models.Model):
 
 class Category(models.Model):
     """Категории товаров"""
-    name = models.CharField(verbose_name='Название категории', max_length=30, blank=False, null=False)
+    name = models.CharField(verbose_name='Название категории', max_length=30, blank=False, null=False, unique=True)
     is_active = models.BooleanField(verbose_name='Активно', default=True)
 
     class Meta:
@@ -100,6 +102,7 @@ class ProductOptions(models.Model):
 
     def __str__(self):
         return f'{self.product.name}, {self.size}, {self.price}, {self.count}'
+
 
 
 # остальные модели для отзывов, статей и тд.
