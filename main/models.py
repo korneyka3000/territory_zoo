@@ -7,23 +7,24 @@ from django.db import models
 
 class Product(models.Model):
     """Товары магазина"""
-    UNIT_OF_MEASUREMENT_CHOICES = (
-        ('кг.', 'кг.'),
-        ('гр.', 'гр.'),
-        ('л.', 'л.'),
-        ('мл.', 'мл.'),
-        ('шт.', 'шт.'),
-    )
-    name = models.CharField(verbose_name='Название товара', max_length=150, blank=False, null=False)
+    # UNIT_OF_MEASUREMENT_CHOICES = (
+    #     ('кг.', 'кг.'),
+    #     ('гр.', 'гр.'),
+    #     ('л.', 'л.'),
+    #     ('мл.', 'мл.'),
+    #     ('шт.', 'шт.'),
+    # )                          Dog_Korm_Pedigree_Pushok
+    # slug = models.SlugField()= Animal+Category+Brand+Product_Name
+    name = models.CharField(verbose_name='Название товара', max_length=150, blank=False, null=False)  # unique=True?
     description = RichTextField(verbose_name='Описание товара', null=True, blank=True)
     features = RichTextField(verbose_name='Ключевые особенности', null=True, blank=True)
     composition = RichTextField(verbose_name='Состав', null=True, blank=True)
     additives = RichTextField(verbose_name='Пищевые добавки', null=True, blank=True)
     analysis = RichTextField(verbose_name='Гарантированный анализ', null=True, blank=True)
     image = RichTextUploadingField(verbose_name='Изображение товара', blank=True, config_name='custom')
-    unit = models.CharField(verbose_name='Единица измерения', max_length=10, choices=UNIT_OF_MEASUREMENT_CHOICES,
-                            blank=False)
-    date_added = models.DateField(verbose_name='Дата добавления', auto_now_add=True)
+    # unit = models.CharField(verbose_name='Единица измерения', max_length=10, choices=UNIT_OF_MEASUREMENT_CHOICES,
+    #                         blank=False)
+    date_added = models.DateTimeField(verbose_name='Дата добавления', auto_now_add=True)
     is_active = models.BooleanField(verbose_name='Активен', default=True)
     animal = models.ManyToManyField('Animal', related_name='products', verbose_name='Тип животного')
     brand = models.ForeignKey('Brand', related_name='products', verbose_name='Бренд', on_delete=models.PROTECT)
@@ -45,9 +46,32 @@ class Product(models.Model):
     def product_options(self):
         return self.options.count()
 
+
+class ProductOptions(models.Model):
+    """Доступные фасовки для товара(разные фасовки по весу, объёму и тд. ...)"""
+    article_number = models.CharField(verbose_name='Артикул товара', max_length=200, unique=True, db_index=True,
+                                      blank=True, null=True)
+    product = models.ForeignKey('Product', related_name='options', on_delete=models.PROTECT, verbose_name='Варианты')
+    # partial = models.BooleanField(verbose_name='На развес', default=False)
+    price = models.DecimalField(verbose_name='Цена', max_digits=8, decimal_places=2)  # 10 / 21/
+    size = models.PositiveIntegerField(verbose_name='Объём/Масса/Штук', blank=False, null=False)  # CharField = "150гр." / = 1кг / 980г
+    stock_balance = models.PositiveIntegerField(verbose_name='Остаток на складе')
+    is_active = models.BooleanField(verbose_name='Активно', default=True)
+    date_created = models.DateTimeField(verbose_name='Дата создания', auto_now_add=True, blank=True, null=True)
+    date_updated = models.DateTimeField(verbose_name='Дата обновления', auto_now=True, blank=True, null=True)  #TODO: later remove blank and null TRUE
+
+    class Meta:
+        verbose_name = 'Вариант фасовки'
+        verbose_name_plural = 'ВАРИАНТЫ ФАСОВКИ'
+
+    def __str__(self):
+        return f'{self.product.name}, {self.size}, {self.price}, {self.stock_balance}'
+
+
 class Animal(models.Model):
     """Доступные типы животных для поиска товаров"""
-    name = models.CharField(verbose_name='Название животного', max_length=20, unique=True)  # unique=True, db_index=True or add slugfield
+    name = models.CharField(verbose_name='Название животного', max_length=20,
+                            unique=True)  # unique=True, db_index=True or add slugfield
     image = RichTextUploadingField(verbose_name='Изображение животного', blank=True, config_name='custom')
 
     class Meta:
@@ -75,6 +99,7 @@ class Brand(models.Model):
 
     count_prod.short_description = 'Количество товаров'
 
+
 class Category(models.Model):
     """Категории товаров"""
     name = models.CharField(verbose_name='Название категории', max_length=30, blank=False, null=False, unique=True)
@@ -88,20 +113,7 @@ class Category(models.Model):
         return self.name
 
 
-class ProductOptions(models.Model):
-    """Доступные фасовки для товара(разные фасовки по весу, объёму и тд. ...)"""
-    product = models.ForeignKey('Product', related_name='options', on_delete=models.PROTECT, verbose_name='Варианты')
-    price = models.DecimalField(verbose_name='Цена', max_digits=8, decimal_places=2)
-    size = models.PositiveIntegerField(verbose_name='Объём/Масса/Штук', blank=False, null=False)
-    count = models.PositiveIntegerField(verbose_name='Остаток на складе')
-    is_active = models.BooleanField(verbose_name='Активно', default=True)
 
-    class Meta:
-        verbose_name = 'Вариант фасовки'
-        verbose_name_plural = 'ВАРИАНТЫ ФАСОВКИ'
-
-    def __str__(self):
-        return f'{self.product.name}, {self.size}, {self.price}, {self.count}'
 
 
 
@@ -166,10 +178,3 @@ class Info(models.Model):
 
     def __str__(self):
         return f'Адрес: {self.address}, телефон: {self.phone_number}'
-
-
-
-
-
-
-

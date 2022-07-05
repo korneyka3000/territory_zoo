@@ -1,5 +1,4 @@
 from pprint import pprint
-
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action, api_view, schema
@@ -20,13 +19,13 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
-    filterset_fields = ('brand', 'animal', 'category',)
-    search_fields = ('name',)
-    ordering_fields = ('name', 'brand', 'date_added',)
-    ordering = ('name',)
+    # filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
+    # filterset_fields = ('brand', 'animal', 'category',)
+    # search_fields = ('name',)
+    # ordering_fields = ('name', 'brand', 'date_added',)
+    # ordering = ('name',)
 
-    # def get_queryset  (self):
+    # def get_queryset(self):
     #     query_set = Product.objects.all()
     #     brand = self.request.query_params.get('brand')
     #     print(len(brand))
@@ -34,19 +33,14 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     #         query_set = query_set.filter(brand_id=brand)
     #     return query_set
 
-    @action(methods=['POST'], detail=False, filterset_fields=('brand', 'animal'))
-    def filter_product(self, request):
-        # pprint(request.__dict__)
-        a = request.data
-        # print(dir(request))
-        print(a['filters'])
-        # print(request.query_params)
-        # print(self.kwargs)
-        # print(self.filterset_fields)
-        query_set = self.get_queryset().filter(**a['filters'])
-        print(query_set)
-        serializer = ProductSerializer(query_set, many=True)
-        return Response(serializer.data)
+    # @action(methods=['POST'], detail=False)
+    # def filter_product(self, request):
+    #     a = request.data
+    #     print(a['filters'])
+    #     query_set = self.get_queryset().filter(**a['filters'])
+    #     serializer = ProductSerializer(query_set, many=True)
+    #     context = {"length": len(query_set)}
+    #     return Response({**context, 'data': serializer.data})
 
 
 class BrandViewSet(viewsets.ReadOnlyModelViewSet):
