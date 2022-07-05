@@ -53,8 +53,8 @@ class ProductOptions(models.Model):
                                       blank=True, null=True)
     product = models.ForeignKey('Product', related_name='options', on_delete=models.PROTECT, verbose_name='Варианты')
     # partial = models.BooleanField(verbose_name='На развес', default=False)
-    price = models.DecimalField(verbose_name='Цена', max_digits=8, decimal_places=2)  # 10 / 21/
-    size = models.PositiveIntegerField(verbose_name='Объём/Масса/Штук', blank=False, null=False)  # CharField = "150гр." / = 1кг / 980г
+    price = models.DecimalField(verbose_name='Цена', max_digits=8, decimal_places=2)  # 10 / 21/ 50 за 1 кг
+    size = models.PositiveIntegerField(verbose_name='Объём/Масса/Штук', blank=False, null=False)  # CharField = "150гр." / = 1кг / 500грамм
     stock_balance = models.PositiveIntegerField(verbose_name='Остаток на складе')
     is_active = models.BooleanField(verbose_name='Активно', default=True)
     date_created = models.DateTimeField(verbose_name='Дата создания', auto_now_add=True, blank=True, null=True)

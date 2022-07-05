@@ -17,7 +17,7 @@ class FilterProductSerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    # options = ProductOptionsSerializer(many=True, read_only=True)
+    options = ProductOptionsSerializer(many=True, read_only=True)
 
     class Meta:
         model = Product
