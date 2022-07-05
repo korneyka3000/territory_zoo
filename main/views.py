@@ -19,18 +19,21 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    # filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
-    # filterset_fields = ('brand', 'animal', 'category',)
-    # search_fields = ('name',)
-    # ordering_fields = ('name', 'brand', 'date_added',)
-    # ordering = ('name',)
+    filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
+    filterset_fields = ('brand', 'animal', 'category',)
+    search_fields = ('name',)
+    ordering_fields = ('name', 'brand', 'date_added',)
+    ordering = ('name',)
 
     # def get_queryset(self):
     #     query_set = Product.objects.all()
     #     brand = self.request.query_params.get('brand')
-    #     print(len(brand))
-    #     if brand:
-    #         query_set = query_set.filter(brand_id=brand)
+    #     my_set = query_set.filter(brand_id=brand)
+    #     print(my_set, 'my_set')
+    #     print(len(my_set))
+    #     # print(brand)
+    #     # if brand:
+    #     #     query_set = query_set.filter(brand_id=brand)
     #     return query_set
 
     # @action(methods=['POST'], detail=False)
