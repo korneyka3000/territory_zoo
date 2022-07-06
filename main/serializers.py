@@ -6,14 +6,7 @@ class ProductOptionsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductOptions
-        exclude = ('product',)
-
-
-class FilterProductSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Product
-        fields = ('id', 'name')
+        exclude = ('product', 'is_active', 'date_created', 'date_updated')
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -21,7 +14,8 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = '__all__'
+        fields = ('id', 'name', 'animal', 'brand', 'category', 'options', 'image',
+                  'description', 'features', 'composition', 'additives', 'analysis')
         depth = 1
 
 
