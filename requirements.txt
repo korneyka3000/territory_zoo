@@ -5,6 +5,8 @@ coreapi==2.3.3
 coreschema==0.0.4
 Django==4.0.5
 django-ckeditor==6.4.2
+django-cors-headers==3.13.0
+django-filter==22.1
 django-js-asset==2.0.0
 django-rest-swagger==2.2.0
 djangorestframework==3.13.1
@@ -24,5 +26,3 @@ simplejson==3.17.6
 sqlparse==0.2.4
 uritemplate==4.1.1
 urllib3==1.26.9
-
-django-filter==22.1
