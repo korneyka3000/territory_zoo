@@ -41,14 +41,15 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     ordering_fields = ('name', 'options__price', 'date_added',)
     ordering = ('name',)
 
-    # def list(self, request, *args, **kwargs):
-    #     response = super().list(request, args, kwargs)
-    #     if len(response.data) == 0:
-    #         response.status_code = 403
-    #     print(response.status_code)
-    #     print(response.data)
-    #     # response.data['one_more'] = 5
-    #     return response
+    def list(self, request, *args, **kwargs):
+        response = super().list(request, args, kwargs)
+        print(response.status_code)
+        if len(response.data['results']) == 0:
+            response.status_code = 400
+        print(response.status_code)
+        # print(response.data['results'])
+        # response.data['one_more'] = 5
+        return response
 
     # def filter_queryset(self, queryset):
     #     for backend in list(self.filter_backends):
