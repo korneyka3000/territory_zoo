@@ -157,7 +157,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CKEDITOR_UPLOAD_PATH = ''
-CKEDITOR_RESTRICT_BY_DATE = True
 CKEDITOR_CONFIGS = {
     'default': {
         'enterMode': 2,
@@ -165,7 +164,7 @@ CKEDITOR_CONFIGS = {
         'toolbar_YourCustomToolbarConfig': [
             {'name': 'paragraph',
              'items': ['NumberedList', 'BulletedList',
-                       'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock',]},
+                       'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock']},
         ],
         'toolbar': 'YourCustomToolbarConfig',
         'tabSpaces': 4,
