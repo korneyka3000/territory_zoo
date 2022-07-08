@@ -37,13 +37,13 @@ class ProductOptionsAdmin(admin.ModelAdmin):
     list_per_page = 20
 
 
-
 @admin.register(Animal)
 class AnimalAdmin(ImportExportModelAdmin):
     list_display = 'name', 'image_img', 'count_prod'
     search_fields = 'name',
     list_per_page = 20
     resource_class = AnimalAdminResource
+    readonly_fields = ["preview"]
 
     def image_img(self, obj):
         if obj.image:
@@ -53,6 +53,10 @@ class AnimalAdmin(ImportExportModelAdmin):
 
     image_img.short_description = 'Изображение'
 
+    def preview(self, obj):
+        return mark_safe(f'<img src="{obj.image.url}" style="max-height: 100px;">')
+
+    preview.short_description = 'Превью изображения'
 
 @admin.register(Brand)
 class BrandAdmin(ImportExportModelAdmin):
@@ -60,6 +64,7 @@ class BrandAdmin(ImportExportModelAdmin):
     search_fields = 'name',
     list_per_page = 20
     resource_class = BrandAdminResource
+    readonly_fields = ["preview"]
 
     def image_img(self, obj):
         if obj.image:
@@ -69,8 +74,10 @@ class BrandAdmin(ImportExportModelAdmin):
 
     image_img.short_description = 'Изображение'
 
+    def preview(self, obj):
+        return mark_safe(f'<img src="{obj.image.url}" style="max-height: 100px;">')
 
-
+    preview.short_description = 'Превью изображения'
 
 
 @admin.register(Product)
@@ -81,11 +88,7 @@ class ProductAdmin(ImportExportModelAdmin):
     list_per_page = 20
     exclude = ('unique_name',)
     resource_class = ProductAdminResource
-
-    # def before_import_row(self):
-    #     if str() == int():
-    #         raise ValidationError('Строка не может иметь числа')
-
+    readonly_fields = ["preview"]
 
     def image_img(self, obj):
         if obj.image:
@@ -94,6 +97,11 @@ class ProductAdmin(ImportExportModelAdmin):
             return 'Нет изображения'
 
     image_img.short_description = 'Изображение'
+
+    def preview(self, obj):
+        return mark_safe(f'<img src="{obj.image.url}" style="max-height: 100px;">')
+
+    preview.short_description = 'Превью изображения'
 
 
 @admin.register(Category)
