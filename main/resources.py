@@ -23,7 +23,7 @@ class ProductAdminResource(resources.ModelResource):
                           widget=ManyToManyWidget(Animal, field='name', separator=', '))
     category = fields.Field(column_name='category', attribute='category',
                             widget=ForeignKeyWidget(Category, field='name'))
-    brand = fields.Field(column_name='brand', attribute='brand', widget=ForeignKeyWidget(model=Brand, field='name'))
+    brand = fields.Field(column_name='brand', attribute='brand', widget=ForeignKeyWidget(Brand, field='name'))
 
     class Meta:
         model = Product
