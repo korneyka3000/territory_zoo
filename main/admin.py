@@ -1,5 +1,7 @@
 from django.contrib import admin
 from django.core.exceptions import ValidationError
+from django.db import models
+from django.forms import TextInput
 from django.utils.safestring import mark_safe
 from import_export.admin import ImportExportModelAdmin
 from .models import Product, Brand, Animal, Category, ProductOptions
@@ -39,11 +41,11 @@ class ProductOptionsAdmin(admin.ModelAdmin):
 
 @admin.register(Animal)
 class AnimalAdmin(ImportExportModelAdmin):
-    list_display = 'name', 'image_img', 'count_prod'
+    list_display = 'name', 'image_img', 'count_prod',
     search_fields = 'name',
-    list_per_page = 20
+    readonly_fields = 'preview',
     resource_class = AnimalAdminResource
-    readonly_fields = ["preview"]
+    list_per_page = 20
 
     def image_img(self, obj):
         if obj.image:
@@ -54,17 +56,18 @@ class AnimalAdmin(ImportExportModelAdmin):
     image_img.short_description = 'Изображение'
 
     def preview(self, obj):
-        return mark_safe(f'<img src="{obj.image.url}" style="max-height: 100px;">')
+        return mark_safe(f'<img src="{obj.image.url}" width="100" height="100">')
 
     preview.short_description = 'Превью изображения'
 
+
 @admin.register(Brand)
 class BrandAdmin(ImportExportModelAdmin):
-    list_display = 'name', 'image_img', 'count_prod'
+    list_display = 'name', 'image_img', 'count_prod',
     search_fields = 'name',
-    list_per_page = 20
+    readonly_fields = 'preview',
     resource_class = BrandAdminResource
-    readonly_fields = ["preview"]
+    list_per_page = 20
 
     def image_img(self, obj):
         if obj.image:
@@ -75,20 +78,21 @@ class BrandAdmin(ImportExportModelAdmin):
     image_img.short_description = 'Изображение'
 
     def preview(self, obj):
-        return mark_safe(f'<img src="{obj.image.url}" style="max-height: 100px;">')
+        return mark_safe(f'<img src="{obj.image.url}" width="100" height="100">')
 
     preview.short_description = 'Превью изображения'
 
 
 @admin.register(Product)
 class ProductAdmin(ImportExportModelAdmin):
-    list_display = 'name', 'brand', 'image_img', 'date_added', 'is_active', 'product_options'
+    list_display = 'name', 'brand', 'image_img', 'date_added', 'is_active', 'product_options',
     list_editable = 'is_active',
     list_filter = 'date_added', 'animal', 'brand', 'is_active',
-    list_per_page = 20
     exclude = ('unique_name',)
+    readonly_fields = 'preview',
+    formfield_overrides = {models.CharField: {'widget': TextInput(attrs={'size': '90'})}}
     resource_class = ProductAdminResource
-    readonly_fields = ["preview"]
+    list_per_page = 20
 
     def image_img(self, obj):
         if obj.image:
@@ -99,7 +103,7 @@ class ProductAdmin(ImportExportModelAdmin):
     image_img.short_description = 'Изображение'
 
     def preview(self, obj):
-        return mark_safe(f'<img src="{obj.image.url}" style="max-height: 100px;">')
+        return mark_safe(f'<img src="{obj.image.url}" width="100" height="100">')
 
     preview.short_description = 'Превью изображения'
 
