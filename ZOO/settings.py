@@ -159,6 +159,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CKEDITOR_UPLOAD_PATH = ''
 CKEDITOR_CONFIGS = {
     'default': {
+        'height': 150,
+        'width': 900,
         'enterMode': 2,
         'skin': 'moono',
         'toolbar_YourCustomToolbarConfig': [
