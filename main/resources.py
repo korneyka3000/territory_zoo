@@ -19,7 +19,8 @@ from .models import Product, Animal, Brand, Category
 
 
 class ProductAdminResource(resources.ModelResource):
-    animal = fields.Field(column_name='animal', attribute='animal', widget=ManyToManyWidget(Animal, field='name'))
+    animal = fields.Field(column_name='animal', attribute='animal',
+                          widget=ManyToManyWidget(Animal, field='name', separator=', '))
     category = fields.Field(column_name='category', attribute='category',
                             widget=ForeignKeyWidget(Category, field='name'))
     brand = fields.Field(column_name='brand', attribute='brand', widget=ForeignKeyWidget(model=Brand, field='name'))
