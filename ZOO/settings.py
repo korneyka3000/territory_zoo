@@ -15,7 +15,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
@@ -26,7 +25,6 @@ SECRET_KEY = 'django-insecure-0(iz#y+(1-9ef69qo_dp7cx_9q6uu0m5_#*c%fetubd2gd4()w
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
 
 # Application definition
 
@@ -45,8 +43,9 @@ INSTALLED_APPS = [
     'rest_framework_swagger',
     'django_filters',
     'ckeditor_uploader',
-    'ckeditor',
 
+    'ckeditor',
+    'import_export',
 
 ]
 
@@ -88,20 +87,26 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'ZOO.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'territory_zoo',
-        'USER': 'USER',
-        'PASSWORD': 'PASWRD',
-        'HOST': 'localhost',
-        # 'PORT': '5432'
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'territory_zoo',
+#         'USER': 'USER',
+#         'PASSWORD': 'PASWRD',
+#         'HOST': 'localhost',
+# 'PORT': '5432'
+# }
+# }
 
 
 # Password validation
@@ -122,7 +127,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
@@ -134,10 +138,11 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
@@ -153,35 +158,16 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CKEDITOR_UPLOAD_PATH = ''
 CKEDITOR_RESTRICT_BY_DATE = True
-CKEDITOR_FORCE_JPEG_COMPRESSION = True
 CKEDITOR_CONFIGS = {
     'default': {
+        'enterMode': 2,
         'skin': 'moono',
-        'toolbar_Basic': [
-            ['Source', '-', 'Bold', 'Italic']
-        ],
         'toolbar_YourCustomToolbarConfig': [
-            {'name': 'basicstyles',
-             'items': ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat']},
             {'name': 'paragraph',
-             'items': ['NumberedList', 'BulletedList', '-',
-                       'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-']},
-            {'name': 'insert',
-             'items': ['Image', 'Table', 'Smiley', 'SpecialChar']},
-            '/',
-            {'name': 'styles', 'items': ['Styles', 'Format', 'Font', 'FontSize']},
-            {'name': 'colors', 'items': ['TextColor', 'BGColor']},
+             'items': ['NumberedList', 'BulletedList',
+                       'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock',]},
         ],
         'toolbar': 'YourCustomToolbarConfig',
         'tabSpaces': 4,
     },
-    'custom': {
-        'skin': 'moono',
-        'toolbar_YourCustomToolbarConfig': [
-            {'name': 'insert',
-             'items': ['Image']},
-
-        ],
-        'toolbar': 'YourCustomToolbarConfig',
-    }
 }
