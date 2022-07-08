@@ -83,6 +83,11 @@ class Animal(models.Model):
     def __str__(self):
         return self.name
 
+    def count_prod(self):
+        return self.products.count()
+
+    count_prod.short_description = 'Количество товаров'
+
 
 class Brand(models.Model):
     """Бренды товаров доступные в магазине"""
@@ -113,6 +118,11 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+
+    def count_prod(self):
+        return self.products.count()
+
+    count_prod.short_description = 'Количество товаров'
 
 
 # остальные модели для отзывов, статей и тд.

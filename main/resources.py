@@ -20,7 +20,8 @@ from .models import Product, Animal, Brand, Category
 
 class ProductAdminResource(resources.ModelResource):
     animal = fields.Field(column_name='animal', attribute='animal', widget=ManyToManyWidget(Animal, field='name'))
-    category = fields.Field(column_name='category', attribute='category', widget=ForeignKeyWidget(Category, field='name'))
+    category = fields.Field(column_name='category', attribute='category',
+                            widget=ForeignKeyWidget(Category, field='name'))
     brand = fields.Field(column_name='brand', attribute='brand', widget=ForeignKeyWidget(model=Brand, field='name'))
 
     class Meta:
@@ -30,14 +31,12 @@ class ProductAdminResource(resources.ModelResource):
 
 
 class AnimalAdminResource(resources.ModelResource):
-
     class Meta:
         model = Animal
         fields = 'id', 'name',
 
 
 class BrandAdminResource(resources.ModelResource):
-
     class Meta:
         model = Brand
         fields = 'id', 'name',

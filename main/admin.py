@@ -1,9 +1,9 @@
 from django.contrib import admin
+from django.core.exceptions import ValidationError
 from django.utils.safestring import mark_safe
 from import_export.admin import ImportExportModelAdmin
 from .models import Product, Brand, Animal, Category, ProductOptions
 from .resources import ProductAdminResource, AnimalAdminResource, BrandAdminResource
-
 
 
 #
@@ -28,7 +28,7 @@ from .resources import ProductAdminResource, AnimalAdminResource, BrandAdminReso
 # 
 # admin.site.register(Article, ArticleAdmin)
 # 
-# 
+@admin.register(ProductOptions)
 class ProductOptionsAdmin(admin.ModelAdmin):
     """Вариант фасовки"""
     list_display = 'article_number', 'product', 'price', 'size', 'stock_balance', 'is_active',
@@ -37,12 +37,10 @@ class ProductOptionsAdmin(admin.ModelAdmin):
     list_per_page = 20
 
 
-admin.site.register(ProductOptions, ProductOptionsAdmin)
-
 
 @admin.register(Animal)
 class AnimalAdmin(ImportExportModelAdmin):
-    list_display = 'name', 'image_img'
+    list_display = 'name', 'image_img', 'count_prod'
     search_fields = 'name',
     list_per_page = 20
     resource_class = AnimalAdminResource
@@ -58,7 +56,7 @@ class AnimalAdmin(ImportExportModelAdmin):
 
 @admin.register(Brand)
 class BrandAdmin(ImportExportModelAdmin):
-    list_display = 'name', 'image_img'
+    list_display = 'name', 'image_img', 'count_prod'
     search_fields = 'name',
     list_per_page = 20
     resource_class = BrandAdminResource
@@ -72,14 +70,22 @@ class BrandAdmin(ImportExportModelAdmin):
     image_img.short_description = 'Изображение'
 
 
+
+
+
 @admin.register(Product)
 class ProductAdmin(ImportExportModelAdmin):
-    list_display = 'name', 'brand', 'image_img', 'date_added', 'is_active', 'product_options',
+    list_display = 'name', 'brand', 'image_img', 'date_added', 'is_active', 'product_options'
     list_editable = 'is_active',
     list_filter = 'date_added', 'animal', 'brand', 'is_active',
     list_per_page = 20
     exclude = ('unique_name',)
     resource_class = ProductAdminResource
+
+    # def before_import_row(self):
+    #     if str() == int():
+    #         raise ValidationError('Строка не может иметь числа')
+
 
     def image_img(self, obj):
         if obj.image:
@@ -93,5 +99,5 @@ class ProductAdmin(ImportExportModelAdmin):
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     """Категории товара"""
-    list_display = 'name', 'is_active',
+    list_display = 'name', 'is_active', 'count_prod',
     list_editable = 'is_active',
