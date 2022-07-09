@@ -15,7 +15,6 @@ class Product(models.Model):
     analysis = RichTextField(verbose_name='Гарантированный анализ', null=True, blank=True)
     date_added = models.DateTimeField(verbose_name='Дата добавления', auto_now_add=True)
     is_active = models.BooleanField(verbose_name='Активен', default=True)
-    image = models.ManyToManyField('ProductImage', verbose_name='Изображение товара', blank=True)
     animal = models.ManyToManyField('Animal', related_name='products', verbose_name='Тип животного', blank=True)
     brand = models.ForeignKey('Brand', related_name='products', verbose_name='Бренд', on_delete=models.PROTECT,
                               null=True, blank=True)
@@ -34,8 +33,6 @@ class Product(models.Model):
 
     product_options.short_description = 'Доступные фасовки'
 
-
-
     # def save(self, *args, **kwargs):
     #     super(Product, self).save(*args, **kwargs)
     #     animals = ''
@@ -52,14 +49,16 @@ class Product(models.Model):
 
 class ProductImage(models.Model):
     """Изображение товара"""
+    product = models.ForeignKey('Product', verbose_name='Изображение товара', blank=True, null=True,
+                                on_delete=models.CASCADE)
     image = models.ImageField(verbose_name='Изображение товара', blank=True, upload_to='photos_products/Y/M/')
 
     class Meta:
         verbose_name = 'Изображение товара'
         verbose_name_plural = 'ИЗОБРАЖЕНИЕ ТОВАРА'
 
-    # def __str__(self):
-    #     return str(self.image)
+    def __str__(self):
+        return str(self.product.name)
 
 
 class ProductOptions(models.Model):
@@ -68,8 +67,7 @@ class ProductOptions(models.Model):
     product = models.ForeignKey('Product', related_name='options', on_delete=models.PROTECT, verbose_name='Варианты')
     partial = models.BooleanField(verbose_name='На развес', default=False)
     price = models.DecimalField(verbose_name='Цена', max_digits=8, decimal_places=2)  # 10 / 21/ 50 за 1 кг
-    size = models.CharField(verbose_name='Объём/Масса/Штук', max_length=50, blank=False,
-                            null=False)  # CharField = "150гр." / = 1кг / 500грамм
+    size = models.CharField(verbose_name='Объём/Масса/Штук', max_length=50, blank=False, null=False)
     stock_balance = models.PositiveIntegerField(verbose_name='Остаток на складе')
     is_active = models.BooleanField(verbose_name='Активно', default=True)
     date_created = models.DateTimeField(verbose_name='Дата создания', auto_now_add=True, blank=True, null=True)
@@ -79,9 +77,6 @@ class ProductOptions(models.Model):
     class Meta:
         verbose_name = 'Вариант фасовки'
         verbose_name_plural = 'ВАРИАНТЫ ФАСОВКИ'
-
-    def __str__(self):
-        return f'{self.product.name}, На развес {self.partial}, {self.size}, {self.price}, {self.stock_balance}'
 
 
 class Animal(models.Model):
@@ -138,9 +133,10 @@ class Category(models.Model):
     count_prod.short_description = 'Количество товаров'
 
 
-# остальные модели для отзывов, статей и тд.
+# модели которые не относятся к товарам для продажи
 
 class Article(models.Model):
+    """Полезная статьи"""
     title = models.CharField(verbose_name='Название статьи', max_length=200)
     animals = models.ForeignKey(Animal, verbose_name='Название животного', on_delete=models.PROTECT)
     description = RichTextField(verbose_name='Описание статьи')
@@ -158,9 +154,16 @@ class Article(models.Model):
         return self.title
 
     def body_description(self):
-        return u"%s..." % (self.description[:150],)
+        return f"%s..." % (self.description[:200],)
 
     body_description.short_description = 'Описание статьи'
+
+
+
+
+
+
+
 
 
 # TODO: поля изменить в зависимости от формы отзыва

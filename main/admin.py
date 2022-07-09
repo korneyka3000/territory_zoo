@@ -3,17 +3,8 @@ from django.db import models
 from django.forms import TextInput
 from django.utils.safestring import mark_safe
 from import_export.admin import ImportExportModelAdmin
-from .models import Product, Brand, Animal, Category, ProductOptions, ProductImage
+from .models import Product, Brand, Animal, Category, ProductOptions, ProductImage, Article
 from .resources import ProductAdminResource, AnimalAdminResource, BrandAdminResource
-
-
-@admin.register(ProductOptions)
-class ProductOptionsAdmin(admin.ModelAdmin):
-    """Вариант фасовки"""
-    list_display = 'article_number', 'product', 'price', 'size', 'stock_balance', 'is_active',
-    list_editable = 'price', 'size', 'stock_balance', 'is_active',
-    list_filter = 'product', 'size', 'stock_balance', 'is_active',
-    list_per_page = 20
 
 
 @admin.register(Animal)
@@ -62,10 +53,57 @@ class BrandAdmin(ImportExportModelAdmin):
     preview.short_description = 'Превью изображения'
 
 
-@admin.register(ProductImage)
-class ProductImageAdmin(admin.ModelAdmin):
+class ProductImageInline(admin.TabularInline):
     """Изображение товара"""
-    list_display = 'image_img',
+    model = ProductImage
+    extra = 2
+    readonly_fields = 'preview',
+
+    def preview(self, obj):
+        return mark_safe(f'<img src="{obj.image.url}" width="100" height="100">')
+
+    preview.short_description = 'Превью изображения'
+
+
+@admin.register(Category)
+class Category(ImportExportModelAdmin):
+    """Категории товара"""
+    list_display = 'name', 'is_active', 'count_prod',
+    list_editable = 'is_active',
+
+
+class ProductOptionsInline(admin.TabularInline):
+    """Вариант фасовки"""
+    model = ProductOptions
+    extra = 2
+
+
+@admin.register(Product)
+class ProductAdmin(ImportExportModelAdmin):
+    """Товары магазина"""
+    formfield_overrides = {models.CharField: {'widget': TextInput(attrs={'size': '90'})}}
+
+    fieldsets = (
+        ('ОСНОВНЫЕ ДАННЫЕ', {'fields': ('name', 'brand', 'animal', 'category',)}),
+        ('ИНФОРМАЦИЯ О ТОВАРЕ', {'fields': ('description', 'features', 'composition', 'additives', 'analysis',)}),
+    )
+    list_display = 'name', 'brand', 'category', 'date_added', 'is_active', 'product_options',
+    list_editable = 'is_active',
+    list_filter = 'date_added', 'animal', 'brand', 'category', 'is_active',
+    exclude = 'unique_name',
+    resource_class = ProductAdminResource
+    inlines = [ProductOptionsInline, ProductImageInline]
+    list_per_page = 20
+
+
+@admin.register(Article)
+class ArticleAdmin(admin.ModelAdmin):
+    """Полезные статьи"""
+    list_display = 'title', 'animals', 'image_img', 'body_description', 'date_added', 'time_read', 'is_active',
+    list_editable = 'is_active',
+    list_filter = 'date_added', 'animals', 'time_read', 'is_active',
+    search_fields = 'title', 'body_description',
+    list_per_page = 20
     readonly_fields = 'preview',
 
     def image_img(self, obj):
@@ -82,31 +120,11 @@ class ProductImageAdmin(admin.ModelAdmin):
     preview.short_description = 'Превью изображения'
 
 
-@admin.register(Product)
-class ProductAdmin(ImportExportModelAdmin):
-    """Товары магазина"""
-    formfield_overrides = {models.CharField: {'widget': TextInput(attrs={'size': '90'})}}
-    # fields = 'name', 'brand', 'animal', 'category', 'image', 'description', 'features', 'composition', 'additives', 'analysis',
-    fieldsets = (
-        ('Основные данные', {'fields': ('name', 'brand', 'animal', 'category', 'image',)}),
-        ('Информация о товаре', {'fields': ('description', 'features', 'composition', 'additives', 'analysis',)}),
-    )
-    list_display = 'name', 'brand', 'date_added', 'is_active', 'product_options',
-    list_editable = 'is_active',
-    list_filter = 'date_added', 'animal', 'brand', 'is_active',
-    exclude = 'unique_name',
-    resource_class = ProductAdminResource
-    list_per_page = 20
 
 
-@admin.register(Category)
-class CategoryAdmin(ImportExportModelAdmin):
-    """Категории товара"""
-    list_display = 'name', 'is_active', 'count_prod',
-    list_editable = 'is_active',
 
-#
-#
+
+
 # class InfoAdmin(admin.ModelAdmin):
 #     """Информация о магазине"""
 #     list_display = 'address', 'time_weekdays', 'time_weekend', 'phone_number', 'published',
@@ -116,14 +134,4 @@ class CategoryAdmin(ImportExportModelAdmin):
 # admin.site.register(Info, InfoAdmin)
 #
 #
-# class ArticleAdmin(admin.ModelAdmin):
-#     """Полезные статьи"""
-#     list_display = 'title', 'animals', 'body_description', 'date_added', 'time_read', 'is_active',
-#     list_editable = 'is_active',
-#     list_filter = 'animals', 'time_read', 'is_active',
-#     search_fields = 'title', 'body_description',
-#     list_per_page = 20
-#
-#
-# admin.site.register(Article, ArticleAdmin)
 #
