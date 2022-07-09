@@ -41,6 +41,7 @@ class ProductOptionsAdmin(admin.ModelAdmin):
 
 @admin.register(Animal)
 class AnimalAdmin(ImportExportModelAdmin):
+    """Типы животных"""
     list_display = 'name', 'image_img', 'count_prod',
     search_fields = 'name',
     readonly_fields = 'preview',
@@ -63,6 +64,7 @@ class AnimalAdmin(ImportExportModelAdmin):
 
 @admin.register(Brand)
 class BrandAdmin(ImportExportModelAdmin):
+    """Бренды товаров"""
     list_display = 'name', 'image_img', 'count_prod',
     search_fields = 'name',
     readonly_fields = 'preview',
@@ -85,10 +87,11 @@ class BrandAdmin(ImportExportModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(ImportExportModelAdmin):
+    """Товары магазина"""
     list_display = 'name', 'brand', 'image_img', 'date_added', 'is_active', 'product_options',
     list_editable = 'is_active',
     list_filter = 'date_added', 'animal', 'brand', 'is_active',
-    exclude = ('unique_name',)
+    exclude = 'unique_name',
     readonly_fields = 'preview',
     formfield_overrides = {models.CharField: {'widget': TextInput(attrs={'size': '90'})}}
     resource_class = ProductAdminResource
