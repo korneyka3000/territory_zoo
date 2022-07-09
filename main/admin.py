@@ -5,7 +5,7 @@ from django.utils.safestring import mark_safe
 from import_export.admin import ImportExportModelAdmin
 from .models import Product, Brand, Animal, Category, ProductOptions, ProductImage, Article, Comments
 from .resources import ProductAdminResource, AnimalAdminResource, BrandAdminResource
-
+admin.site.site_header = 'Территория ZOO'  # Надпись в админке сайта
 
 @admin.register(Animal)
 class AnimalAdmin(ImportExportModelAdmin):
