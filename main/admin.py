@@ -1,9 +1,10 @@
 from django.contrib import admin
 from django.db import models
 from django.forms import TextInput
+from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from import_export.admin import ImportExportModelAdmin
-from .models import Product, Brand, Animal, Category, ProductOptions, ProductImage, Article
+from .models import Product, Brand, Animal, Category, ProductOptions, ProductImage, Article, Comments, InfoShop
 from .resources import ProductAdminResource, AnimalAdminResource, BrandAdminResource
 
 
@@ -120,18 +121,48 @@ class ArticleAdmin(admin.ModelAdmin):
     preview.short_description = 'Превью изображения'
 
 
+@admin.register(Comments)
+class CommentsAdmin(admin.ModelAdmin):
+    """Отзыв о магазине"""
+    list_display = 'name_author', 'body_description', 'phone_number', 'date_added', 'published',
+    list_editable = 'published',
+    list_filter = 'date_added', 'published',
+    list_per_page = 20
 
 
+@admin.register(InfoShop)
+class InfoShopAdmin(admin.ModelAdmin):
+    """Информация о магазине"""
+    list_display = 'address', 'time_weekdays', 'time_weekend', 'phone_number', 'published',
+    list_editable = 'time_weekdays', 'time_weekend', 'phone_number', 'published',
 
+def status_colored(self, obj):
+    color = 'yellow'
+    if obj.status == 'Closed':
+        color = 'green'
+        return format_html(
 
+            '<b style="background:{};">{}</b>',
+            color,
+            obj.status
+                       )
+    elif obj.status =='In Progress':
+        color = 'yellow'
+        return format_html(
 
-# class InfoAdmin(admin.ModelAdmin):
-#     """Информация о магазине"""
-#     list_display = 'address', 'time_weekdays', 'time_weekend', 'phone_number', 'published',
-#     list_editable = 'time_weekdays', 'time_weekend', 'phone_number', 'published',
-#
-#
-# admin.site.register(Info, InfoAdmin)
-#
-#
-#
+            '<b style="background:{};">{}</b>',
+            color,
+            obj.status
+                       )
+
+    # else obj.status =='Needs Info':
+    #     color = 'orange'
+    #     return format_html(
+    #
+    #         '<b style="background:{};">{}</b>',
+    #         color,
+    #         obj.status
+    #                    )
+
+status_colored.admin_order_field = 'closed'
+
