@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.core.exceptions import ValidationError
 from django.db import models
 from django.forms import TextInput
 from django.utils.safestring import mark_safe
@@ -89,6 +88,7 @@ class BrandAdmin(ImportExportModelAdmin):
 class ProductAdmin(ImportExportModelAdmin):
     """Товары магазина"""
     list_display = 'name', 'brand', 'image_img', 'date_added', 'is_active', 'product_options',
+    # list_display = 'name', 'brand', 'image_img', 'date_added', 'is_active', 'product_options',
     list_editable = 'is_active',
     list_filter = 'date_added', 'animal', 'brand', 'is_active',
     exclude = 'unique_name',
