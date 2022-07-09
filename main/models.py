@@ -13,11 +13,10 @@ class Product(models.Model):
     composition = RichTextField(verbose_name='Состав', null=True, blank=True)
     additives = RichTextField(verbose_name='Пищевые добавки', null=True, blank=True)
     analysis = RichTextField(verbose_name='Гарантированный анализ', null=True, blank=True)
-    image = models.ImageField(verbose_name='Изображение', blank=True, upload_to='photos_products/Y/M/')
     date_added = models.DateTimeField(verbose_name='Дата добавления', auto_now_add=True)
     is_active = models.BooleanField(verbose_name='Активен', default=True)
-    animal = models.ManyToManyField('Animal', related_name='products', verbose_name='Тип животного', null=True,
-                                    blank=True)
+    image = models.ManyToManyField('ProductImage', verbose_name='Изображение товара', blank=True)
+    animal = models.ManyToManyField('Animal', related_name='products', verbose_name='Тип животного', blank=True)
     brand = models.ForeignKey('Brand', related_name='products', verbose_name='Бренд', on_delete=models.PROTECT,
                               null=True, blank=True)
     category = models.ForeignKey('Category', related_name='products', verbose_name='Категория',
@@ -47,6 +46,19 @@ class Product(models.Model):
     #     return u"%s..." % (self.description[:150],)
     #
     # body_description.short_description = 'Описание товара'
+
+
+class ProductImage(models.Model):
+    """Изображение товара"""
+    image = models.ImageField(verbose_name='Изображение товара', blank=True, upload_to='photos_products/Y/M/')
+
+    class Meta:
+        verbose_name = 'Изображение товара'
+        verbose_name_plural = 'ИЗОБРАЖЕНИЕ ТОВАРА'
+
+    # def __str__(self):
+    #     return str(self.image)
+
 
 class ProductOptions(models.Model):
     """Доступные фасовки для товара(разные фасовки по весу, объёму и тд. ...)"""

@@ -5,19 +5,6 @@ from import_export.widgets import ForeignKeyWidget, ManyToManyWidget
 from .models import Product, Animal, Brand, Category
 
 
-# class ProductResource(resources.ModelResource):
-#     class Meta:
-#         model = Product
-
-
-# def export(request):
-#     person_resource = ProductResource()
-#     dataset = person_resource.export()
-#     response = HttpResponse(dataset.xls, content_type='application/vnd.ms-excel')
-#     response['Content-Disposition'] = 'attachment; filename="persons.xls"'
-#     return response
-
-
 class ProductAdminResource(resources.ModelResource):
     animal = fields.Field(column_name='animal', attribute='animal',
                           widget=ManyToManyWidget(Animal, field='name', separator=', '))
@@ -40,4 +27,10 @@ class AnimalAdminResource(resources.ModelResource):
 class BrandAdminResource(resources.ModelResource):
     class Meta:
         model = Brand
+        fields = 'id', 'name',
+
+
+class CategoryAdminResource(resources.ModelResource):
+    class Meta:
+        model = Category
         fields = 'id', 'name',
