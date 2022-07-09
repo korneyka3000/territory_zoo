@@ -1,10 +1,9 @@
 from django.contrib import admin
 from django.db import models
 from django.forms import TextInput
-from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from import_export.admin import ImportExportModelAdmin
-from .models import Product, Brand, Animal, Category, ProductOptions, ProductImage, Article, Comments, InfoShop
+from .models import Product, Brand, Animal, Category, ProductOptions, ProductImage, Article, Comments
 from .resources import ProductAdminResource, AnimalAdminResource, BrandAdminResource
 
 
@@ -130,39 +129,10 @@ class CommentsAdmin(admin.ModelAdmin):
     list_per_page = 20
 
 
-@admin.register(InfoShop)
-class InfoShopAdmin(admin.ModelAdmin):
-    """Информация о магазине"""
-    list_display = 'address', 'time_weekdays', 'time_weekend', 'phone_number', 'published',
-    list_editable = 'time_weekdays', 'time_weekend', 'phone_number', 'published',
+# @admin.register(InfoShop)
+# class InfoShopAdmin(admin.ModelAdmin):
+#     """Информация о магазине"""
+#     list_display = 'address', 'time_weekdays', 'time_weekend', 'phone_number', 'published',
+#     list_editable = 'time_weekdays', 'time_weekend', 'phone_number', 'published',
 
-def status_colored(self, obj):
-    color = 'yellow'
-    if obj.status == 'Closed':
-        color = 'green'
-        return format_html(
-
-            '<b style="background:{};">{}</b>',
-            color,
-            obj.status
-                       )
-    elif obj.status =='In Progress':
-        color = 'yellow'
-        return format_html(
-
-            '<b style="background:{};">{}</b>',
-            color,
-            obj.status
-                       )
-
-    # else obj.status =='Needs Info':
-    #     color = 'orange'
-    #     return format_html(
-    #
-    #         '<b style="background:{};">{}</b>',
-    #         color,
-    #         obj.status
-    #                    )
-
-status_colored.admin_order_field = 'closed'
 

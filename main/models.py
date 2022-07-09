@@ -40,16 +40,10 @@ class Product(models.Model):
     #     self.unique_name = f'{animals} {self.category.name} {self.brand.name} {self.name}'
     #     super(Product, self).save()
 
-    # def body_description(self):
-    #     return u"%s..." % (self.description[:150],)
-    #
-    # body_description.short_description = 'Описание товара'
-
 
 class ProductImage(models.Model):
     """Изображение товара"""
-    product = models.ForeignKey('Product', verbose_name='Изображение товара', blank=True, null=True,
-                                on_delete=models.CASCADE)
+    product = models.ForeignKey('Product', verbose_name='Изображение товара', on_delete=models.CASCADE)
     image = models.ImageField(verbose_name='Изображение товара', blank=True, upload_to='photos_products/Y/M/')
 
     class Meta:
@@ -63,7 +57,7 @@ class ProductImage(models.Model):
 class ProductOptions(models.Model):
     """Доступные фасовки для товара(разные фасовки по весу, объёму и тд. ...)"""
     article_number = models.CharField(verbose_name='Артикул товара', max_length=200, unique=True, blank=True, null=True)
-    product = models.ForeignKey('Product', related_name='options', on_delete=models.PROTECT, verbose_name='Варианты')
+    product = models.ForeignKey('Product', related_name='options', on_delete=models.CASCADE, verbose_name='Варианты')
     partial = models.BooleanField(verbose_name='На развес', default=False)
     price = models.DecimalField(verbose_name='Цена', max_digits=8, decimal_places=2)  # 10 / 21/ 50 за 1 кг
     size = models.CharField(verbose_name='Объём/Масса/Штук', max_length=50, blank=False, null=False)
@@ -179,23 +173,22 @@ class Comments(models.Model):
 
     body_description.short_description = 'Описание статьи'
 
-
-class InfoShop(models.Model):
-    """Информация о магазине - адрес, телефон, ст.метро и тд."""
-    address = models.CharField(verbose_name='Адрес магазина', max_length=100, blank=True, null=True)
-    metro = models.CharField(verbose_name='Станция метро', max_length=50, blank=True, null=True)
-    time_weekdays = models.CharField(verbose_name='Время работы (будни)', max_length=50, blank=True, null=True)
-    time_weekend = models.CharField(verbose_name='Время работы (выходные)', max_length=50, blank=True, null=True)
-    phone_number = models.CharField(verbose_name='Номер телефона', max_length=20, blank=True, null=True)
-    social = models.TextField(verbose_name='Социальная сеть', help_text='Ссылка на страницу', blank=True, null=True)
-    maps = models.TextField(verbose_name='Расположение на карте', help_text='Ссылка с яндекс карты (размер 670х374)',
-                            blank=True)
-    description_shop = RichTextField(verbose_name='Описание статьи', config_name='custom')
-    published = models.BooleanField(verbose_name='Опубликовано', default=True)
-
-    class Meta:
-        verbose_name = 'О магазине'
-        verbose_name_plural = 'О МАГАЗИНЕ'
-
-    def __str__(self):
-        return f'{self.address}, {self.metro}'
+# class InfoShop(models.Model):
+#     """Информация о магазине - адрес, телефон, ст.метро и тд."""
+#     address = models.CharField(verbose_name='Адрес магазина', max_length=100, blank=True, null=True)
+#     metro = models.CharField(verbose_name='Станция метро', max_length=50, blank=True, null=True)
+#     time_weekdays = models.CharField(verbose_name='Время работы (будни)', max_length=50, blank=True, null=True)
+#     time_weekend = models.CharField(verbose_name='Время работы (выходные)', max_length=50, blank=True, null=True)
+#     phone_number = models.CharField(verbose_name='Номер телефона', max_length=20, blank=True, null=True)
+#     social = models.TextField(verbose_name='Социальная сеть', help_text='Ссылка на страницу', blank=True, null=True)
+#     maps = models.TextField(verbose_name='Расположение на карте', help_text='Ссылка с яндекс карты (размер 670х374)',
+#                             blank=True)
+#     description_shop = RichTextField(verbose_name='Описание статьи', config_name='custom')
+#     published = models.BooleanField(verbose_name='Опубликовано', default=True)
+#
+#     class Meta:
+#         verbose_name = 'О магазине'
+#         verbose_name_plural = 'О МАГАЗИНЕ'
+#
+#     def __str__(self):
+#         return f'{self.address}, {self.metro}'
