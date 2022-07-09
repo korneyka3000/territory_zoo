@@ -29,6 +29,13 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
+    def product_options(self):
+        return self.options.count()
+
+    product_options.short_description = 'Доступные фасовки'
+
+
+
     # def save(self, *args, **kwargs):
     #     super(Product, self).save(*args, **kwargs)
     #     animals = ''
@@ -36,11 +43,6 @@ class Product(models.Model):
     #         animals += pet.name
     #     self.unique_name = f'{animals} {self.category.name} {self.brand.name} {self.name}'
     #     super(Product, self).save()
-
-    def product_options(self):
-        return self.options.count()
-
-    product_options.short_description = 'Доступные фасовки'
 
     # def body_description(self):
     #     return u"%s..." % (self.description[:150],)

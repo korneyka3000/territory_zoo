@@ -1,4 +1,3 @@
-from django.http import HttpResponse
 from import_export import resources, fields
 from import_export.widgets import ForeignKeyWidget, ManyToManyWidget
 

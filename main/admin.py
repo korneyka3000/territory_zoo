@@ -86,6 +86,11 @@ class ProductImageAdmin(admin.ModelAdmin):
 class ProductAdmin(ImportExportModelAdmin):
     """Товары магазина"""
     formfield_overrides = {models.CharField: {'widget': TextInput(attrs={'size': '90'})}}
+    # fields = 'name', 'brand', 'animal', 'category', 'image', 'description', 'features', 'composition', 'additives', 'analysis',
+    fieldsets = (
+        ('Основные данные', {'fields': ('name', 'brand', 'animal', 'category', 'image',)}),
+        ('Информация о товаре', {'fields': ('description', 'features', 'composition', 'additives', 'analysis',)}),
+    )
     list_display = 'name', 'brand', 'date_added', 'is_active', 'product_options',
     list_editable = 'is_active',
     list_filter = 'date_added', 'animal', 'brand', 'is_active',
