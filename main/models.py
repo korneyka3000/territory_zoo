@@ -30,6 +30,8 @@ class Product(models.Model):
     brand = models.ForeignKey('Brand', related_name='products', verbose_name='Бренд', on_delete=models.PROTECT)
     category = models.ForeignKey('Category', related_name='products', verbose_name='Категория',
                                  on_delete=models.PROTECT)
+    min_price = models.DecimalField(verbose_name='Минимальная цена вариантов продукта', max_digits=8, decimal_places=2,
+                                    null=True, blank=True)
 
     class Meta:
         verbose_name = 'Товар'
@@ -38,12 +40,41 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
+    # @property
+    # def min_price_options(self):
+    #     # list_of_prices = []
+    #     # for option in self.options.all():
+    #     #     list_of_prices.append(option.price)
+    #     #     print(option.price)
+    #     # print(list_of_prices)
+    #     # print(sorted(list_of_prices))
+    #     # self.min_price = sorted(list_of_prices)[0]
+    #     return self.min_price_options()
+    # @min_price_options.setter
+    # def min_price_options(self, id):
+    #     list_of_prices = []
+    #     for option in self.options.all():
+    #         list_of_prices.append(option.price)
+    #         print(option.price)
+    #     print(list_of_prices)
+    #     print(sorted(list_of_prices))
+    #     self.min_price = sorted(list_of_prices)[0]
+    #     # self.save()
+    # # def minimal_price_setter(self):
+
     def save(self, *args, **kwargs):
         super(Product, self).save(*args, **kwargs)
         animals = ''
         for pet in self.animal.all():
             animals += pet.name
         self.unique_name = f'{animals} {self.category.name} {self.brand.name} {self.name}'
+        list_of_prices = []
+        for option in self.options.filter(partial=False):
+            list_of_prices.append(option.price)
+            print(option.price)
+        print(list_of_prices)
+        print(sorted(list_of_prices))
+        self.min_price = sorted(list_of_prices)[0]
         super(Product, self).save()
 
     def body_description(self):
@@ -62,18 +93,41 @@ class ProductOptions(models.Model):
     product = models.ForeignKey('Product', related_name='options', on_delete=models.PROTECT, verbose_name='Варианты')
     partial = models.BooleanField(verbose_name='На развес', default=False)
     price = models.DecimalField(verbose_name='Цена', max_digits=8, decimal_places=2)  # 10 / 21/ 50 за 1 кг
-    size = models.CharField(verbose_name='Объём/Масса/Штук', max_length=50, blank=False, null=False)  # CharField = "150гр." / = 1кг / 500грамм
+    size = models.CharField(verbose_name='Объём/Масса/Штук', max_length=50, blank=False,
+                            null=False)  # CharField = "150гр." / = 1кг / 500грамм
     stock_balance = models.PositiveIntegerField(verbose_name='Остаток на складе')
     is_active = models.BooleanField(verbose_name='Активно', default=True)
     date_created = models.DateTimeField(verbose_name='Дата создания', auto_now_add=True, blank=True, null=True)
-    date_updated = models.DateTimeField(verbose_name='Дата обновления', auto_now=True, blank=True, null=True)  #TODO: later remove blank and null TRUE
+    date_updated = models.DateTimeField(verbose_name='Дата обновления', auto_now=True, blank=True,
+                                        null=True)  # TODO: later remove blank and null TRUE
 
     class Meta:
         verbose_name = 'Вариант фасовки'
         verbose_name_plural = 'ВАРИАНТЫ ФАСОВКИ'
+        ordering = ('partial', 'size',)
 
     def __str__(self):
         return f'{self.product.name}, На развес {self.partial}, {self.size}, {self.price}, {self.stock_balance}'
+
+    # def send_price(self, product):
+    #     new_price.send(sender=self.__class__, product=self.product_id)
+
+    # def save(self, *args, **kwargs):
+    #     super(ProductOptions, self).save(*args, **kwargs)
+    #
+    # @property
+    # def min_price_options(self):
+    #     return self.price
+    #
+    # @min_price_options.setter
+    # def min_price_options(self, id):
+    #     list_of_prices = []
+    #     for option in self.product.options.all():
+    #         list_of_prices.append(option.price)
+    #         print(option.price)
+    #     print(list_of_prices)
+    #     print(sorted(list_of_prices))
+    #     self.product.min_price = sorted(list_of_prices)[0]
 
 
 class Animal(models.Model):
