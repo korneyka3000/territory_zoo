@@ -40,41 +40,22 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
-    # @property
-    # def min_price_options(self):
-    #     # list_of_prices = []
-    #     # for option in self.options.all():
-    #     #     list_of_prices.append(option.price)
-    #     #     print(option.price)
-    #     # print(list_of_prices)
-    #     # print(sorted(list_of_prices))
-    #     # self.min_price = sorted(list_of_prices)[0]
-    #     return self.min_price_options()
-    # @min_price_options.setter
-    # def min_price_options(self, id):
-    #     list_of_prices = []
-    #     for option in self.options.all():
-    #         list_of_prices.append(option.price)
-    #         print(option.price)
-    #     print(list_of_prices)
-    #     print(sorted(list_of_prices))
-    #     self.min_price = sorted(list_of_prices)[0]
-    #     # self.save()
-    # # def minimal_price_setter(self):
-
+    def min_price_options(self):
+        list_of_prices = []
+        options = self.options.filter(partial=False)
+        if options:
+            for option in self.options.filter(is_active=True).filter(partial=False):
+                list_of_prices.append(option.price)
+            self.min_price = min(list_of_prices)
+        else:
+            self.min_price = self.options.price.first()
     def save(self, *args, **kwargs):
         super(Product, self).save(*args, **kwargs)
         animals = ''
         for pet in self.animal.all():
             animals += pet.name
         self.unique_name = f'{animals} {self.category.name} {self.brand.name} {self.name}'
-        list_of_prices = []
-        for option in self.options.filter(partial=False):
-            list_of_prices.append(option.price)
-            print(option.price)
-        print(list_of_prices)
-        print(sorted(list_of_prices))
-        self.min_price = sorted(list_of_prices)[0]
+        self.min_price_options()
         super(Product, self).save()
 
     def body_description(self):
@@ -108,26 +89,6 @@ class ProductOptions(models.Model):
 
     def __str__(self):
         return f'{self.product.name}, На развес {self.partial}, {self.size}, {self.price}, {self.stock_balance}'
-
-    # def send_price(self, product):
-    #     new_price.send(sender=self.__class__, product=self.product_id)
-
-    # def save(self, *args, **kwargs):
-    #     super(ProductOptions, self).save(*args, **kwargs)
-    #
-    # @property
-    # def min_price_options(self):
-    #     return self.price
-    #
-    # @min_price_options.setter
-    # def min_price_options(self, id):
-    #     list_of_prices = []
-    #     for option in self.product.options.all():
-    #         list_of_prices.append(option.price)
-    #         print(option.price)
-    #     print(list_of_prices)
-    #     print(sorted(list_of_prices))
-    #     self.product.min_price = sorted(list_of_prices)[0]
 
 
 class Animal(models.Model):

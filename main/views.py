@@ -53,7 +53,7 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
     filterset_fields = ('animal', 'category',)
     search_fields = ('name',)
-    ordering_fields = ('name', 'options__price',)
+    ordering_fields = ('name', 'min_price',)
     ordering = ('name',)
 
     def list(self, request, *args, **kwargs):

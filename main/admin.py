@@ -50,6 +50,11 @@ class ProductOptionsAdmin(admin.ModelAdmin):
     list_filter = 'product', 'size', 'stock_balance', 'is_active',
     list_per_page = 20
 
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        instance = Product.objects.get(id=obj.product_id)
+        instance.save()
+
 
 admin.site.register(ProductOptions, ProductOptionsAdmin)
 
