@@ -1,6 +1,8 @@
 from collections import OrderedDict
+from django.db.models import Prefetch, Count
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from .models import Product, Brand, Animal, Category, ProductOptions
@@ -14,41 +16,51 @@ from .serializers import (ProductSerializer,
 
 class Pagination(PageNumberPagination):
     page_size = 10
+    page_size_query_param = 'page_size'
 
     def paginate_queryset(self, queryset, request, view=None):
         self.get_count_qs = queryset.count()
         return super(Pagination, self).paginate_queryset(queryset, request, view=view)
 
     def get_paginated_response(self, data):
-        print(type(data))
         return Response(OrderedDict([
-            ('total_product', self.get_count_qs),
+            ('page_number', self.page.number),
+            ('products_on_page', self.page.end_index() - self.page.start_index() + 1),
+            ('total_products', self.get_count_qs),
+            ('total_pages', self.page.paginator.num_pages),
             ('max_products_on_page', self.get_page_size(self.request)),
-            ('next', self.get_next_link()),
-            ('previous', self.get_previous_link()),
             ('results', data),
-            ]))
+        ]))
 
+# class MyOrderFilter(OrderingFilter):
+#     def filter_queryset(self, request, queryset, view):
+#         ordering = self.get_ordering(request, queryset, view)
+#
+#         if ordering:
+#             print(ordering)
+#             if 'options__price' in ordering:
+#                 return queryset.order_by(*ordering)
+#             return queryset.order_by(*ordering)
+#         return queryset
 
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
 
-    queryset = Product.objects.all()
+    queryset = Product.objects.all().prefetch_related(
+        Prefetch('options', queryset=ProductOptions.objects.all())
+    )
     serializer_class = ProductSerializer
     pagination_class = Pagination
     filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
     filterset_fields = ('animal', 'category',)
     search_fields = ('name',)
-    ordering_fields = ('name', 'options__price', 'date_added',)
+    ordering_fields = ('name', 'min_price',)
     ordering = ('name',)
 
-    # def list(self, request, *args, **kwargs):
-    #     response = super().list(request, args, kwargs)
-    #     if len(response.data) == 0:
-    #         response.status_code = 403
-    #     print(response.status_code)
-    #     print(response.data)
-    #     # response.data['one_more'] = 5
-    #     return response
+    def list(self, request, *args, **kwargs):
+        response = super().list(request, args, kwargs)
+        if len(response.data['results']) == 0:
+            response.status_code = 400
+        return response
 
     # def filter_queryset(self, queryset):
     #     for backend in list(self.filter_backends):
@@ -69,6 +81,16 @@ class BrandViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Brand.objects.all()
     serializer_class = BrandSerializer
 
+    # lookup_field = ('name',)
+    # def get_object(self):
+    #     qs = self.get_queryset()#.prefetch_related('products')
+    #     print(qs)
+    #     print(self.kwargs)
+    #     obj = get_object_or_404(qs, **self.kwargs)
+    #     print(obj)
+    #     return obj
+
+
 
 class AnimalViewSet(viewsets.ReadOnlyModelViewSet):
 
@@ -84,5 +106,5 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
 
 class ProductOptionsViewSet(viewsets.ReadOnlyModelViewSet):
 
-    queryset = ProductOptions.objects.all()
+    queryset = ProductOptions.objects.all().order_by('price')
     serializer_class = ProductOptionsSerializer

@@ -47,8 +47,16 @@ class BrandAdmin(ImportExportModelAdmin):
 
     image_img.short_description = 'Изображение'
 
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        instance = Product.objects.get(id=obj.product_id)
+        instance.save()
+
+
     def preview(self, obj):
         return mark_safe(f'<img src="{obj.image.url}" width="100" height="100">')
+
 
     preview.short_description = 'Превью изображения'
 

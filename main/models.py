@@ -18,7 +18,13 @@ class Product(models.Model):
     brand = models.ForeignKey('Brand', related_name='products', verbose_name='Бренд', on_delete=models.PROTECT,
                               null=True, blank=True)
     category = models.ForeignKey('Category', related_name='products', verbose_name='Категория',
+
+                                 on_delete=models.PROTECT)
+    min_price = models.DecimalField(verbose_name='Минимальная цена вариантов продукта', max_digits=8, decimal_places=2,
+                                    null=True, blank=True)
+
                                  on_delete=models.PROTECT, null=True, blank=True)
+
 
     class Meta:
         verbose_name = 'Товар'
@@ -27,8 +33,28 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
+
+    def min_price_options(self):
+        list_of_prices = []
+        options = self.options.filter(partial=False)
+        if options:
+            for option in self.options.filter(is_active=True).filter(partial=False):
+                list_of_prices.append(option.price)
+            self.min_price = min(list_of_prices)
+        else:
+            self.min_price = self.options.price.first()
+    def save(self, *args, **kwargs):
+        super(Product, self).save(*args, **kwargs)
+        animals = ''
+        for pet in self.animal.all():
+            animals += pet.name
+        self.unique_name = f'{animals} {self.category.name} {self.brand.name} {self.name}'
+        self.min_price_options()
+        super(Product, self).save()
+
     def product_options(self):
         return self.options.count()
+
 
     product_options.short_description = 'Доступные фасовки'
 
@@ -70,6 +96,7 @@ class ProductOptions(models.Model):
     class Meta:
         verbose_name = 'Вариант фасовки'
         verbose_name_plural = 'ВАРИАНТЫ ФАСОВКИ'
+        ordering = ('partial', 'size',)
 
 
 class Animal(models.Model):
