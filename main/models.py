@@ -23,9 +23,6 @@ class Product(models.Model):
     min_price = models.DecimalField(verbose_name='Минимальная цена вариантов продукта', max_digits=8, decimal_places=2,
                                     null=True, blank=True)
 
-                                 on_delete=models.PROTECT, null=True, blank=True)
-
-
     class Meta:
         verbose_name = 'Товар'
         verbose_name_plural = 'ТОВАРЫ'
