@@ -1,8 +1,7 @@
 from collections import OrderedDict
-from django.db.models import Prefetch, Count
+from django.db.models import Prefetch
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
-from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from .models import Product, Brand, Animal, Category, ProductOptions
@@ -32,16 +31,6 @@ class Pagination(PageNumberPagination):
             ('results', data),
         ]))
 
-# class MyOrderFilter(OrderingFilter):
-#     def filter_queryset(self, request, queryset, view):
-#         ordering = self.get_ordering(request, queryset, view)
-#
-#         if ordering:
-#             print(ordering)
-#             if 'options__price' in ordering:
-#                 return queryset.order_by(*ordering)
-#             return queryset.order_by(*ordering)
-#         return queryset
 
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
 
@@ -53,7 +42,7 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
     filterset_fields = ('animal', 'category',)
     search_fields = ('name',)
-    ordering_fields = ('name', 'min_price',)
+    ordering_fields = ('name', 'min_price', 'popular')
     ordering = ('name',)
 
     def list(self, request, *args, **kwargs):
@@ -61,12 +50,6 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
         if len(response.data['results']) == 0:
             response.status_code = 400
         return response
-
-    # def filter_queryset(self, queryset):
-    #     for backend in list(self.filter_backends):
-    #         queryset = backend().filter_queryset(self.request, queryset, self)
-    #         print(queryset)
-    #     return queryset
 
     def get_queryset(self):
         queryset = Product.objects.all()
@@ -91,7 +74,6 @@ class BrandViewSet(viewsets.ReadOnlyModelViewSet):
     #     return obj
 
 
-
 class AnimalViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = Animal.objects.all()
@@ -106,5 +88,5 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
 
 class ProductOptionsViewSet(viewsets.ReadOnlyModelViewSet):
 
-    queryset = ProductOptions.objects.all().order_by('price')
+    queryset = ProductOptions.objects.all()#.order_by('price')
     serializer_class = ProductOptionsSerializer

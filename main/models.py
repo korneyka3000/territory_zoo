@@ -5,6 +5,11 @@ from django.db import models
 # модели которые относятся к товарам для продажи
 class Product(models.Model):
     """Товары магазина"""
+    POPULAR_CHOICES = (
+        (0, 'Обычный',),
+        (1, 'Популярный',),
+        (2, 'Очень популярный',),
+    )
     unique_name = models.CharField(max_length=200, null=True, blank=True, unique=True)
     name = models.CharField(verbose_name='Название товара', max_length=150, blank=False, null=False)  # unique=True?
     description = RichTextField(verbose_name='Описание товара', null=True, blank=True, config_name='default')
@@ -18,10 +23,10 @@ class Product(models.Model):
     brand = models.ForeignKey('Brand', related_name='products', verbose_name='Бренд', on_delete=models.PROTECT,
                               null=True, blank=True)
     category = models.ForeignKey('Category', related_name='products', verbose_name='Категория',
-
                                  on_delete=models.PROTECT)
     min_price = models.DecimalField(verbose_name='Минимальная цена вариантов продукта', max_digits=8, decimal_places=2,
                                     null=True, blank=True)
+    popular = models.CharField(max_length=1, choices=POPULAR_CHOICES, default=0)
 
     class Meta:
         verbose_name = 'Товар'
@@ -29,17 +34,20 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
-
-
+    #TODO: check it and make exceptions
     def min_price_options(self):
         list_of_prices = []
-        options = self.options.filter(partial=False)
+        options = self.options.filter(partial=False).filter(is_active=True)
+        print(options)
         if options:
-            for option in self.options.filter(is_active=True).filter(partial=False):
+            for option in self.options.all():
                 list_of_prices.append(option.price)
             self.min_price = min(list_of_prices)
+        elif not self.options.all():
+            self.is_active = False
         else:
             self.min_price = self.options.price.first()
+
     def save(self, *args, **kwargs):
         super(Product, self).save(*args, **kwargs)
         animals = ''
@@ -52,22 +60,13 @@ class Product(models.Model):
     def product_options(self):
         return self.options.count()
 
-
     product_options.short_description = 'Доступные фасовки'
-
-    # def save(self, *args, **kwargs):
-    #     super(Product, self).save(*args, **kwargs)
-    #     animals = ''
-    #     for pet in self.animal.all():
-    #         animals += pet.name
-    #     self.unique_name = f'{animals} {self.category.name} {self.brand.name} {self.name}'
-    #     super(Product, self).save()
 
 
 class ProductImage(models.Model):
     """Изображение товара"""
-    product = models.ForeignKey('Product', verbose_name='Изображение товара', on_delete=models.CASCADE)
-    image = models.ImageField(verbose_name='Изображение товара', blank=True, upload_to='photos_products/Y/M/')
+    product = models.ForeignKey('Product', related_name='images', verbose_name='Изображение товара', on_delete=models.CASCADE)
+    image = models.ImageField(verbose_name='Изображение товара', blank=True, null=True, upload_to='photos_products/Y/M/')
 
     class Meta:
         verbose_name = 'Изображение товара'
@@ -82,7 +81,7 @@ class ProductOptions(models.Model):
     article_number = models.CharField(verbose_name='Артикул товара', max_length=200, unique=True, blank=True, null=True)
     product = models.ForeignKey('Product', related_name='options', on_delete=models.CASCADE, verbose_name='Варианты')
     partial = models.BooleanField(verbose_name='На развес', default=False)
-    price = models.DecimalField(verbose_name='Цена', max_digits=8, decimal_places=2)  # 10 / 21/ 50 за 1 кг
+    price = models.DecimalField(verbose_name='Цена', max_digits=8, decimal_places=2)
     size = models.CharField(verbose_name='Объём/Масса/Штук', max_length=50, blank=False, null=False)
     stock_balance = models.PositiveIntegerField(verbose_name='Остаток на складе')
     is_active = models.BooleanField(verbose_name='Активно', default=True)
@@ -94,6 +93,11 @@ class ProductOptions(models.Model):
         verbose_name = 'Вариант фасовки'
         verbose_name_plural = 'ВАРИАНТЫ ФАСОВКИ'
         ordering = ('partial', 'size',)
+
+    def save(self, *args, **kwargs):
+        super(ProductOptions, self).save(*args, **kwargs)
+        instance = Product.objects.get(id=self.product_id)
+        instance.save()
 
 
 class Animal(models.Model):
@@ -197,22 +201,22 @@ class Comments(models.Model):
 
     body_description.short_description = 'Описание статьи'
 
-# class InfoShop(models.Model):
-#     """Информация о магазине - адрес, телефон, ст.метро и тд."""
-#     address = models.CharField(verbose_name='Адрес магазина', max_length=100, blank=True, null=True)
-#     metro = models.CharField(verbose_name='Станция метро', max_length=50, blank=True, null=True)
-#     time_weekdays = models.CharField(verbose_name='Время работы (будни)', max_length=50, blank=True, null=True)
-#     time_weekend = models.CharField(verbose_name='Время работы (выходные)', max_length=50, blank=True, null=True)
-#     phone_number = models.CharField(verbose_name='Номер телефона', max_length=20, blank=True, null=True)
-#     social = models.TextField(verbose_name='Социальная сеть', help_text='Ссылка на страницу', blank=True, null=True)
-#     maps = models.TextField(verbose_name='Расположение на карте', help_text='Ссылка с яндекс карты (размер 670х374)',
-#                             blank=True)
-#     description_shop = RichTextField(verbose_name='Описание статьи', config_name='custom')
-#     published = models.BooleanField(verbose_name='Опубликовано', default=True)
-#
-#     class Meta:
-#         verbose_name = 'О магазине'
-#         verbose_name_plural = 'О МАГАЗИНЕ'
-#
-#     def __str__(self):
-#         return f'{self.address}, {self.metro}'
+class InfoShop(models.Model):
+    """Информация о магазине - адрес, телефон, ст.метро и тд."""
+    address = models.CharField(verbose_name='Адрес магазина', max_length=100, blank=True, null=True)
+    metro = models.CharField(verbose_name='Станция метро', max_length=50, blank=True, null=True)
+    time_weekdays = models.CharField(verbose_name='Время работы (будни)', max_length=50, blank=True, null=True)
+    time_weekend = models.CharField(verbose_name='Время работы (выходные)', max_length=50, blank=True, null=True)
+    phone_number = models.CharField(verbose_name='Номер телефона', max_length=20, blank=True, null=True)
+    social = models.TextField(verbose_name='Социальная сеть', help_text='Ссылка на страницу', blank=True, null=True)
+    maps = models.TextField(verbose_name='Расположение на карте', help_text='Ссылка с яндекс карты (размер 670х374)',
+                            blank=True)
+    description_shop = RichTextField(verbose_name='Описание статьи', config_name='custom')
+    published = models.BooleanField(verbose_name='Опубликовано', default=True)
+
+    class Meta:
+        verbose_name = 'О магазине'
+        verbose_name_plural = 'О МАГАЗИНЕ'
+
+    def __str__(self):
+        return f'{self.address}, {self.metro}'

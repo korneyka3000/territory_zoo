@@ -1,6 +1,7 @@
 from django.utils.html import strip_tags
 from rest_framework import serializers
-from .models import Product, ProductOptions, Brand, Animal, Category
+from .models import (Animal, Article, Brand, Category, Comments, InfoShop,
+                     Product, ProductOptions, ProductImage,)
 
 
 class ProductOptionsSerializer(serializers.ModelSerializer):
@@ -9,20 +10,26 @@ class ProductOptionsSerializer(serializers.ModelSerializer):
         exclude = ('product', 'is_active', 'date_created', 'date_updated')
 
 
+class ProductImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductImage
+        fields = '__all__'
+
+
 class ProductSerializer(serializers.ModelSerializer):
     options = ProductOptionsSerializer(many=True, read_only=True)
+    images = ProductImageSerializer(many=True, read_only=True)
 
     class Meta:
         model = Product
-        fields = ('id', 'name', 'animal', 'brand', 'category', 'options', 'image',
-                  'description', 'features', 'composition', 'additives', 'analysis')  # , 'min_price')
+        fields = ('id', 'name', 'animal', 'brand', 'category', 'options', 'images',
+                  'description', 'features', 'composition', 'additives', 'analysis',)
         depth = 1
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
         data['description'] = strip_tags(instance.description)
         data['features'] = strip_tags(instance.features)
-        data['image'] = strip_tags(instance.image)
         data['composition'] = strip_tags(instance.composition)
         return data
 
@@ -33,7 +40,6 @@ class BrandSerializer(serializers.ModelSerializer):
     class Meta:
         model = Brand
         fields = ('id', 'name', 'products',)
-        # depth = 1
 
 
 class AnimalSerializer(serializers.ModelSerializer):
@@ -41,7 +47,7 @@ class AnimalSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Animal
-        fields = 'id', 'name', 'products'
+        fields = ('id', 'name', 'products')
         depth = 1
 
 
@@ -50,3 +56,21 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = '__all__'
         depth = 1
+
+
+class ArticleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Article
+        fields = '__all__'
+
+
+class CommentsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comments
+        fields = '__all__'
+
+
+class InfoShopSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InfoShop
+        fields = '__all__'

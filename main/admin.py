@@ -7,6 +7,44 @@ from .models import Product, Brand, Animal, Category, ProductOptions, ProductIma
 from .resources import ProductAdminResource, AnimalAdminResource, BrandAdminResource
 
 
+admin.site.site_header = 'Территория ZOO'  # Надпись в админке сайта
+
+
+class ProductImageInline(admin.TabularInline):
+    """Изображение товара"""
+    model = ProductImage
+    extra = 2
+    readonly_fields = 'preview',
+
+    def preview(self, obj):
+        return mark_safe(f'<img src="{obj.image.url}" width="100" height="100">')
+
+    preview.short_description = 'Превью изображения'
+
+
+class ProductOptionsInline(admin.TabularInline):
+    """Вариант фасовки"""
+    model = ProductOptions
+    extra = 2
+
+
+@admin.register(Product)
+class ProductAdmin(ImportExportModelAdmin):
+    """Товары магазина"""
+    formfield_overrides = {models.CharField: {'widget': TextInput(attrs={'size': '90'})}}
+    fieldsets = (
+        ('ОСНОВНЫЕ ДАННЫЕ', {'fields': ('name', 'brand', 'animal', 'category',)}),
+        ('ИНФОРМАЦИЯ О ТОВАРЕ', {'fields': ('description', 'features', 'composition', 'additives', 'analysis',)}),
+    )
+    list_display = 'name', 'brand', 'category', 'date_added', 'is_active', 'product_options',
+    list_editable = 'is_active',
+    list_filter = 'date_added', 'animal', 'brand', 'category', 'is_active',
+    exclude = 'unique_name',
+    resource_class = ProductAdminResource
+    inlines = [ProductOptionsInline, ProductImageInline]
+    list_per_page = 20
+
+
 @admin.register(Animal)
 class AnimalAdmin(ImportExportModelAdmin):
     """Типы животных"""
@@ -47,26 +85,6 @@ class BrandAdmin(ImportExportModelAdmin):
 
     image_img.short_description = 'Изображение'
 
-
-    def save_model(self, request, obj, form, change):
-        super().save_model(request, obj, form, change)
-        instance = Product.objects.get(id=obj.product_id)
-        instance.save()
-
-
-    def preview(self, obj):
-        return mark_safe(f'<img src="{obj.image.url}" width="100" height="100">')
-
-
-    preview.short_description = 'Превью изображения'
-
-
-class ProductImageInline(admin.TabularInline):
-    """Изображение товара"""
-    model = ProductImage
-    extra = 2
-    readonly_fields = 'preview',
-
     def preview(self, obj):
         return mark_safe(f'<img src="{obj.image.url}" width="100" height="100">')
 
@@ -78,30 +96,6 @@ class Category(ImportExportModelAdmin):
     """Категории товара"""
     list_display = 'name', 'is_active', 'count_prod',
     list_editable = 'is_active',
-
-
-class ProductOptionsInline(admin.TabularInline):
-    """Вариант фасовки"""
-    model = ProductOptions
-    extra = 2
-
-
-@admin.register(Product)
-class ProductAdmin(ImportExportModelAdmin):
-    """Товары магазина"""
-    formfield_overrides = {models.CharField: {'widget': TextInput(attrs={'size': '90'})}}
-
-    fieldsets = (
-        ('ОСНОВНЫЕ ДАННЫЕ', {'fields': ('name', 'brand', 'animal', 'category',)}),
-        ('ИНФОРМАЦИЯ О ТОВАРЕ', {'fields': ('description', 'features', 'composition', 'additives', 'analysis',)}),
-    )
-    list_display = 'name', 'brand', 'category', 'date_added', 'is_active', 'product_options',
-    list_editable = 'is_active',
-    list_filter = 'date_added', 'animal', 'brand', 'category', 'is_active',
-    exclude = 'unique_name',
-    resource_class = ProductAdminResource
-    inlines = [ProductOptionsInline, ProductImageInline]
-    list_per_page = 20
 
 
 @admin.register(Article)
@@ -136,11 +130,8 @@ class CommentsAdmin(admin.ModelAdmin):
     list_filter = 'date_added', 'published',
     list_per_page = 20
 
-
 # @admin.register(InfoShop)
 # class InfoShopAdmin(admin.ModelAdmin):
 #     """Информация о магазине"""
 #     list_display = 'address', 'time_weekdays', 'time_weekend', 'phone_number', 'published',
 #     list_editable = 'time_weekdays', 'time_weekend', 'phone_number', 'published',
-
-
