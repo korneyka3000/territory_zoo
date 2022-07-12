@@ -31,6 +31,8 @@ class ProductSerializer(serializers.ModelSerializer):
         data['description'] = strip_tags(instance.description)
         data['features'] = strip_tags(instance.features)
         data['composition'] = strip_tags(instance.composition)
+        data['additives'] = strip_tags(instance.additives)
+        data['analysis'] = strip_tags(instance.analysis)
         return data
 
 
@@ -43,12 +45,12 @@ class BrandSerializer(serializers.ModelSerializer):
 
 
 class AnimalSerializer(serializers.ModelSerializer):
-    products = ProductSerializer
+    # products = ProductSerializer(many=True,read_only=True)
 
     class Meta:
         model = Animal
-        fields = ('id', 'name', 'products')
-        depth = 1
+        fields = ('id', 'name', 'image',)# 'products')
+        # depth = 3
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -67,7 +69,7 @@ class ArticleSerializer(serializers.ModelSerializer):
 class CommentsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comments
-        fields = '__all__'
+        exclude = ('date_added', 'published')
 
 
 class InfoShopSerializer(serializers.ModelSerializer):

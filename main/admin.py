@@ -1,10 +1,12 @@
 from django.contrib import admin
 from django.db import models
 from django.forms import TextInput
+from django.http import HttpResponse
 from django.utils.safestring import mark_safe
 from import_export.admin import ImportExportModelAdmin
-from .models import Product, Brand, Animal, Category, ProductOptions, ProductImage, Article, Comments
+from .models import Product, Brand, Animal, Category, ProductOptions, ProductImage, Article, Comments, InfoShop
 from .resources import ProductAdminResource, AnimalAdminResource, BrandAdminResource
+from import_export.widgets import ForeignKeyWidget
 admin.site.site_header = 'Территория ZOO'  # Надпись в админке сайта
 
 
@@ -32,11 +34,11 @@ class ProductAdmin(ImportExportModelAdmin):
     formfield_overrides = {models.CharField: {'widget': TextInput(attrs={'size': '90'})}}
     fieldsets = (
         ('ОСНОВНЫЕ ДАННЫЕ', {'fields': ('name', 'brand', 'animal', 'category',)}),
-        ('ИНФОРМАЦИЯ О ТОВАРЕ', {'fields': ('description', 'features', 'composition', 'additives', 'analysis',)}),
+        ('ИНФОРМАЦИЯ О ТОВАРЕ', {'fields': ('popular', 'description', 'features', 'composition', 'additives', 'analysis',)}),
     )
-    list_display = 'name', 'brand', 'category', 'date_added', 'is_active', 'product_options',
-    list_editable = 'is_active',
-    list_filter = 'date_added', 'animal', 'brand', 'category', 'is_active',
+    list_display = ('name', 'brand', 'category', 'date_added', 'popular', 'is_active', 'product_options',)
+    list_editable = ('is_active', 'popular')
+    list_filter = ('date_added', 'animal', 'brand', 'category', 'is_active', 'popular',)
     exclude = 'unique_name',
     resource_class = ProductAdminResource
     inlines = [ProductOptionsInline, ProductImageInline]
@@ -123,13 +125,24 @@ class ArticleAdmin(admin.ModelAdmin):
 @admin.register(Comments)
 class CommentsAdmin(admin.ModelAdmin):
     """Отзыв о магазине"""
-    list_display = 'name_author', 'body_description', 'phone_number', 'date_added', 'published',
-    list_editable = 'published',
-    list_filter = 'date_added', 'published',
+    list_display = ('name_author', 'body_description', 'phone_number', 'date_added', 'published',)
+    list_editable = ('published',)
+    list_filter = ('date_added', 'published',)
     list_per_page = 20
 
-# @admin.register(InfoShop)
-# class InfoShopAdmin(admin.ModelAdmin):
-#     """Информация о магазине"""
-#     list_display = 'address', 'time_weekdays', 'time_weekend', 'phone_number', 'published',
-#     list_editable = 'time_weekdays', 'time_weekend', 'phone_number', 'published',
+
+@admin.register(InfoShop)
+class InfoShopAdmin(admin.ModelAdmin):
+    """Информация о магазине"""
+    list_display = ('address', 'time_weekdays', 'time_weekend', 'phone_number',)# 'published',
+    list_editable = ('time_weekdays', 'time_weekend', 'phone_number',)# 'published',
+
+    def add_view(self, request):
+        if request.method == "POST":
+            print(request)
+            # Assuming you want a single, global HomePage object
+            if InfoShop.objects.count() >= 1:
+                # redirect to a page saying
+                # you can't create more than one
+                return HttpResponse("Только один адрес доступен, измените существующий")
+        return super(InfoShopAdmin, self).add_view(request)

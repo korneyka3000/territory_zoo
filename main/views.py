@@ -1,16 +1,16 @@
-from collections import OrderedDict
 from django.db.models import Prefetch
+from rest_framework import viewsets, generics
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework.decorators import action
+from rest_framework.filters import OrderingFilter, SearchFilter
+from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
-from .models import Product, Brand, Animal, Category, ProductOptions
-from rest_framework import viewsets
-from .serializers import (ProductSerializer,
-                          BrandSerializer,
-                          AnimalSerializer,
-                          CategorySerializer,
-                          ProductOptionsSerializer,)
+from .models import Animal, Brand, Category, Product, ProductOptions, Article, Comments, InfoShop
+from .serializers import (AnimalSerializer, BrandSerializer, CategorySerializer,
+                          ProductSerializer, ProductOptionsSerializer, ArticleSerializer,  # CommentsSerializer,
+                          InfoShopSerializer, CommentsSerializer, )
+from collections import OrderedDict
 
 
 class Pagination(PageNumberPagination):
@@ -34,15 +34,12 @@ class Pagination(PageNumberPagination):
 
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
 
-    queryset = Product.objects.all().prefetch_related(
-        Prefetch('options', queryset=ProductOptions.objects.all())
-    )
     serializer_class = ProductSerializer
     pagination_class = Pagination
     filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
     filterset_fields = ('animal', 'category',)
     search_fields = ('name',)
-    ordering_fields = ('name', 'min_price', 'popular')
+    ordering_fields = ('name', 'min_price', 'popular',)
     ordering = ('name',)
 
     def list(self, request, *args, **kwargs):
@@ -57,6 +54,12 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
         if brands:
             queryset = queryset.filter(brand_id__in=brands)
         return queryset
+
+    # def get_object(self):
+    #     queryset = self.get_queryset().select_related()
+    #     obj = get_object_or_404(queryset, pk=self.kwargs['pk'])
+    #     print(obj)
+    #     return obj
 
 
 class BrandViewSet(viewsets.ReadOnlyModelViewSet):
@@ -79,14 +82,43 @@ class AnimalViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Animal.objects.all()
     serializer_class = AnimalSerializer
 
+    @action(detail=True, methods=['GET'], url_path='popular', name='popular_product_by_pet')
+    def popular_by_pet(self, request, pk=None):
+        instance = Product.objects.filter(animal=pk).order_by('-popular')
+        if len(instance) < 16:
+            serializer = ProductSerializer(instance, many=True)
+        else:
+            serializer = ProductSerializer(instance[:16], many=True)
+        return Response(serializer.data)
+
 
 class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
 
-    queryset = Category.objects.all()
+    queryset = Category.objects.filter(is_active=True)
     serializer_class = CategorySerializer
 
 
 class ProductOptionsViewSet(viewsets.ReadOnlyModelViewSet):
 
-    queryset = ProductOptions.objects.all()
+    queryset = ProductOptions.objects.filter(is_active=True)
     serializer_class = ProductOptionsSerializer
+
+
+class ArticleViewSet(viewsets.ReadOnlyModelViewSet):
+
+    queryset = Article.objects.filter(is_active=True)
+    serializer_class = ArticleSerializer
+
+
+class CommentsView(viewsets.ViewSet):
+
+    def list(self, request):
+        comments = Comments.objects.filter(published=True)
+        serializer = CommentsSerializer(comments, many=True)
+        return Response(serializer.data)
+
+
+class InfoShopView(viewsets.ViewSet):
+
+    queryset = InfoShop.objects.filter(published=True)
+    serializer_class = InfoShopSerializer

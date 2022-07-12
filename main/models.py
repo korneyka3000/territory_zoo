@@ -1,4 +1,5 @@
 from ckeditor.fields import RichTextField
+from django.contrib.auth.models import User
 from django.db import models
 
 
@@ -6,7 +7,7 @@ from django.db import models
 class Product(models.Model):
     """Товары магазина"""
     POPULAR_CHOICES = (
-        (0, 'Обычный',),
+        (0, 'Стандартный',),
         (1, 'Популярный',),
         (2, 'Очень популярный',),
     )
@@ -26,7 +27,7 @@ class Product(models.Model):
                                  on_delete=models.PROTECT)
     min_price = models.DecimalField(verbose_name='Минимальная цена вариантов продукта', max_digits=8, decimal_places=2,
                                     null=True, blank=True)
-    popular = models.CharField(max_length=1, choices=POPULAR_CHOICES, default=0)
+    popular = models.IntegerField(verbose_name='Популярность', choices=POPULAR_CHOICES, default=0)
 
     class Meta:
         verbose_name = 'Товар'
@@ -50,10 +51,10 @@ class Product(models.Model):
 
     def save(self, *args, **kwargs):
         super(Product, self).save(*args, **kwargs)
-        animals = ''
-        for pet in self.animal.all():
-            animals += pet.name
-        self.unique_name = f'{animals} {self.category.name} {self.brand.name} {self.name}'
+        # animals = ''
+        # for pet in self.animal.all():
+        #     animals += pet.name
+        # self.unique_name = f'{animals} {self.category.name} {self.brand.name} {self.name}'
         self.min_price_options()
         super(Product, self).save()
 
@@ -78,11 +79,17 @@ class ProductImage(models.Model):
 
 class ProductOptions(models.Model):
     """Доступные фасовки для товара(разные фасовки по весу, объёму и тд. ...)"""
+    UNIT_CHOICES = (
+        (0, 'шт.'),
+        # (1, 'литр'),
+        (1, 'на вес'),
+    )
     article_number = models.CharField(verbose_name='Артикул товара', max_length=200, unique=True, blank=True, null=True)
     product = models.ForeignKey('Product', related_name='options', on_delete=models.CASCADE, verbose_name='Варианты')
     partial = models.BooleanField(verbose_name='На развес', default=False)
     price = models.DecimalField(verbose_name='Цена', max_digits=8, decimal_places=2)
-    size = models.CharField(verbose_name='Объём/Масса/Штук', max_length=50, blank=False, null=False)
+    size = models.CharField(verbose_name='Объём упаковки', max_length=50, blank=False, null=False)
+    unit = models.IntegerField(verbose_name='Единица измерения', choices=UNIT_CHOICES, default=0)
     stock_balance = models.PositiveIntegerField(verbose_name='Остаток на складе')
     is_active = models.BooleanField(verbose_name='Активно', default=True)
     date_created = models.DateTimeField(verbose_name='Дата создания', auto_now_add=True, blank=True, null=True)
@@ -185,7 +192,7 @@ class Comments(models.Model):
     body_of_comment = models.TextField(verbose_name='Содержание отзыва')
     phone_number = models.CharField(verbose_name='Номер телефона', max_length=20, null=True, blank=True)
     name_animal = models.CharField(verbose_name='Имя питомца', max_length=100, null=True, blank=True)
-    date_added = models.DateField(verbose_name='Дата добавления', auto_now=True)
+    date_added = models.DateTimeField(verbose_name='Дата добавления', auto_now_add=True)
     published = models.BooleanField(verbose_name='Опубликовано', default=False)
 
     class Meta:
@@ -200,6 +207,7 @@ class Comments(models.Model):
         return f"%s..." % (self.body_of_comment[:200],)
 
     body_description.short_description = 'Описание статьи'
+
 
 class InfoShop(models.Model):
     """Информация о магазине - адрес, телефон, ст.метро и тд."""
