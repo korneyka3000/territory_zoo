@@ -12,23 +12,23 @@ class ProductAdminResource(resources.ModelResource):
 
     class Meta:
         model = Product
-        fields = 'id', 'name', 'animal', 'category', 'brand'
-        export_order = 'id', 'name', 'animal', 'category', 'brand'  # порядок экспорта полей
+        fields = ('id', 'name', 'animal', 'category', 'brand',)
+        export_order = ('id', 'name', 'animal', 'category', 'brand',)  # порядок экспорта полей
 
 
 class AnimalAdminResource(resources.ModelResource):
     class Meta:
         model = Animal
-        fields = 'id', 'name',
+        fields = ('id', 'name',)
 
 
 class BrandAdminResource(resources.ModelResource):
     class Meta:
         model = Brand
-        fields = 'id', 'name',
+        fields = ('id', 'name',)
 
 
 class CategoryAdminResource(resources.ModelResource):
     class Meta:
         model = Category
-        fields = 'id', 'name',
+        fields = ('id', 'name',)

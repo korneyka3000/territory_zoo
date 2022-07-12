@@ -88,5 +88,5 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
 
 class ProductOptionsViewSet(viewsets.ReadOnlyModelViewSet):
 
-    queryset = ProductOptions.objects.all()#.order_by('price')
+    queryset = ProductOptions.objects.all()
     serializer_class = ProductOptionsSerializer

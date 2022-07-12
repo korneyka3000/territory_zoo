@@ -7,8 +7,6 @@ from .models import Product, Brand, Animal, Category, ProductOptions, ProductIma
 from .resources import ProductAdminResource, AnimalAdminResource, BrandAdminResource
 admin.site.site_header = 'Территория ZOO'  # Надпись в админке сайта
 
-admin.site.site_header = 'Территория ZOO'  # Надпись в админке сайта
-
 
 class ProductImageInline(admin.TabularInline):
     """Изображение товара"""
