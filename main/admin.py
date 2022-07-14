@@ -1,12 +1,22 @@
 from django.contrib import admin
 from django.db import models
 from django.forms import TextInput
+from django.shortcuts import redirect
+from django.urls import reverse, path
+from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from import_export.admin import ImportExportModelAdmin
 from .models import Product, Brand, Animal, Category, ProductOptions, ProductImage, Article, Comments
 from .resources import ProductAdminResource, AnimalAdminResource, BrandAdminResource
+
 admin.site.site_header = 'Территория ZOO'  # Надпись в админке сайта
 
+
+# from django.http import HttpResponseRedirect
+# from django.conf.urls import url
+# from .models import LoginMonitor
+# from .import_custom import ImportCustom
+#
 
 class ProductImageInline(admin.TabularInline):
     """Изображение товара"""
@@ -34,13 +44,33 @@ class ProductAdmin(ImportExportModelAdmin):
         ('ОСНОВНЫЕ ДАННЫЕ', {'fields': ('name', 'brand', 'animal', 'category',)}),
         ('ИНФОРМАЦИЯ О ТОВАРЕ', {'fields': ('description', 'features', 'composition', 'additives', 'analysis',)}),
     )
-    list_display = 'name', 'brand', 'category', 'date_added', 'is_active', 'product_options',
+    list_display = 'name', 'button', 'brand', 'category', 'date_added', 'is_active', 'product_options',
     list_editable = 'is_active',
     list_filter = 'date_added', 'animal', 'brand', 'category', 'is_active',
     exclude = 'unique_name',
     resource_class = ProductAdminResource
+    radio_fields = {'category': admin.HORIZONTAL, 'brand': admin.HORIZONTAL}  # Отображаемые поля столбец, список
     inlines = [ProductOptionsInline, ProductImageInline]
     list_per_page = 20
+
+    class ImportAdmin(admin.ModelAdmin):
+        change_list_template = 'admin/change_list.html'  # Кнопка для загрузки товара
+
+    def button(self, obj):  # Кнопка в самом товаре для редактирования
+        # return mark_safe(f'<a class="button" >Добавить</a>')
+        return mark_safe(f'<a href="localhost" class ="button"> Главная <a>')
+    button.short_description = 'Ссылка на сайт'
+
+
+    # change_list_template = "admin/monitor_change_list.html"
+    # def get_urls(self):
+    #     urls = super(ProductAdmin, self).get_urls().custom_urls = [url('^import/$', self.process_import, name='process_import'),]
+    #     return urls
+    # def process_import_btmp(self, request):
+    #     import_custom = ImportCustom()
+    #     count = import_custom.import_data()
+    #     self.message_user(request, f"создано {count} новых записей")
+    #     return HttpResponseRedirect("../")
 
 
 @admin.register(Animal)

@@ -50,10 +50,10 @@ class Product(models.Model):
 
     def save(self, *args, **kwargs):
         super(Product, self).save(*args, **kwargs)
-        animals = ''
-        for pet in self.animal.all():
-            animals += pet.name
-        self.unique_name = f'{animals} {self.category.name} {self.brand.name} {self.name}'
+        # animals = ''
+        # for pet in self.animal.all():
+        #     animals += pet.name
+        # self.unique_name = f'{animals} {self.category.name} {self.brand.name} {self.name}'
         self.min_price_options()
         super(Product, self).save()
 
@@ -79,7 +79,7 @@ class ProductImage(models.Model):
 class ProductOptions(models.Model):
     """Доступные фасовки для товара(разные фасовки по весу, объёму и тд. ...)"""
     article_number = models.CharField(verbose_name='Артикул товара', max_length=200, unique=True, blank=True, null=True)
-    product = models.ForeignKey('Product', related_name='options', on_delete=models.CASCADE, verbose_name='Варианты')
+    product = models.ForeignKey('Product', related_name='options', to_field='unique_name', on_delete=models.CASCADE, verbose_name='Варианты')
     partial = models.BooleanField(verbose_name='На развес', default=False)
     price = models.DecimalField(verbose_name='Цена', max_digits=8, decimal_places=2)
     size = models.CharField(verbose_name='Объём/Масса/Штук', max_length=50, blank=False, null=False)
