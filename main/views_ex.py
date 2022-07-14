@@ -22,13 +22,12 @@ def import_csv(request):
                 brand = Brand.objects.get(name=dbframe.brand)
                 category = Category.objects.get(name=dbframe.category)
                 # product = Product.objects.get_or_create(name=dbframe.name, animal_id=animal.id, brand_id=brand.id, category_id=category.id)
-                # product = Product.objects.update_or_create(name=dbframe.name, brand_id=brand.id, category_id=category.id)
                 product = Product.objects.update_or_create(name=dbframe.name, brand_id=brand.id, category_id=category.id)
                 print(product, 'Объект')
 
                 # pro = ProductOptions.objects.get(name=dbframe.options)
-                productoptions = ProductOptions.objects.update_or_create(article_number=dbframe.article_number, price=dbframe.price,)
-                print(productoptions, 'Опции')
+                # productoptions = ProductOptions.objects.update_or_create(article_number=dbframe.article_number, price=dbframe.price,)
+                # print(productoptions, 'Опции')
 
 
             return render(request, 'importexcel.html', {'uploaded_file_url': uploaded_file_url})
