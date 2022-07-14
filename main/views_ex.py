@@ -15,10 +15,10 @@ def import_csv(request):
             filename = fs.save(myfile.name, myfile)
             uploaded_file_url = fs.url(filename)
             excel_file = uploaded_file_url
-            empexceldata = pd.read_csv("." + excel_file, encoding='utf-8')
+            empexceldata = pd.read_csv("." + excel_file, encoding='utf-8')  # sep= ', '
             dbframe = empexceldata
             for dbframe in dbframe.itertuples():
-                # animal = Animal.objects.get(name=dbframe.brand)
+                # animal = Animal.objects.get(name=dbframe.animal)
                 brand = Brand.objects.get(name=dbframe.brand)
                 category = Category.objects.get(name=dbframe.category)
                 # product = Product.objects.get_or_create(name=dbframe.name, animal_id=animal.id, brand_id=brand.id, category_id=category.id)
@@ -26,9 +26,17 @@ def import_csv(request):
                 print(product, 'Объект')
 
                 # pro = ProductOptions.objects.get(name=dbframe.options)
-                # productoptions = ProductOptions.objects.update_or_create(article_number=dbframe.article_number, price=dbframe.price,)
+                # productoptions = ProductOptions.objects.update_or_create(article_number=dbframe.article_number, price=dbframe.price)
                 # print(productoptions, 'Опции')
 
+                # product = Product.objects.update_or_create(name=dbframe.product_id)
+                # print(product)
+                # po = ProductOptions.objects.update_or_create(article_number=dbframe.article_number, options=product,
+                #                                              partial=dbframe.partial, price=dbframe.price,
+                #                                              size=dbframe.size, unit=dbframe.unit,
+                #                                              stock_balance=dbframe.stock_balance,
+                #                                              is_active=dbframe.is_active)
+                # print(po, 'BRAND')
 
             return render(request, 'importexcel.html', {'uploaded_file_url': uploaded_file_url})
     except Exception as identifier:
@@ -42,10 +50,17 @@ def export_csv(request):
         response = HttpResponse(content_type='')
         response['Content-Disposition'] = 'attachment; filename="DB.xlsx"'  # Название файла для отправки
         writer = csv.writer(response)
-        writer.writerow(['article_number', 'name', 'animal', 'brand', 'category', 'price']) #, 'stock_balance'
+        writer.writerow(['article_number', 'name', 'animal', 'brand', 'category', 'price'])  # , 'stock_balance'
         # writer.writerow(['Артикул', 'Название товара', 'Тип животного', 'Бренд', 'Категория', 'Цена', 'Остаток'])
         users = Product.objects.all().values_list('options__article_number', 'name', 'animal__name', 'brand__name',
-                                                  'category__name', 'options__price') #, 'options__stock_balance')
+                                                  'category__name', 'options__price')  # , 'options__stock_balance')
+
+        # writer.writerow(['article_number', 'product', 'partial', 'price', 'size', 'unit', 'stock_balance', 'is_active',
+        #                  'date_created', 'date_updated'])
+        # users = ProductOptions.objects.all().values_list('article_number', 'product', 'partial', 'price', 'size',
+        #                                                  'unit', 'stock_balance', 'is_active', 'date_created',
+        #                                                  'date_updated')
+        # print(users)
         for user in users:
             writer.writerow(user)
         return response
