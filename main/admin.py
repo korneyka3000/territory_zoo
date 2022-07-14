@@ -6,7 +6,6 @@ from django.utils.safestring import mark_safe
 from import_export.admin import ImportExportModelAdmin
 from .models import Product, Brand, Animal, Category, ProductOptions, ProductImage, Article, Comments, InfoShop
 from .resources import ProductAdminResource, AnimalAdminResource, BrandAdminResource
-from import_export.widgets import ForeignKeyWidget
 admin.site.site_header = 'Территория ZOO'  # Надпись в админке сайта
 
 
@@ -44,6 +43,12 @@ class ProductAdmin(ImportExportModelAdmin):
     inlines = [ProductOptionsInline, ProductImageInline]
     list_per_page = 20
 
+    # class ImportAdmin(admin.ModelAdmin):
+    #     change_list_template = 'admin/change_list.html'  # Кнопка для загрузки товара
+    # def button(self, obj):  # Кнопка в самом товаре для редактирования
+    #     # return mark_safe(f'<a class="button" >Добавить</a>')
+    #     return mark_safe(f'<a href="localhost" class ="button"> Главная <a>')
+    # button.short_description = 'Ссылка на сайт'
 
 @admin.register(Animal)
 class AnimalAdmin(ImportExportModelAdmin):
