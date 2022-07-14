@@ -1,0 +1,8 @@
+{% block content %}
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <h2>Загрузить файл в базу данных</h2>
+    <input type="file" name="myfile" class="form-control">
+    <button type="submit" class="btn btn-success">Загрузить</button>
+</form>
+{% endblock %}
