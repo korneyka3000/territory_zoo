@@ -1,14 +1,14 @@
 from django.db.models import Prefetch, Count, Avg, Min, Q, Exists, Case, When, F
-from rest_framework import viewsets, generics
+from rest_framework import viewsets, generics, mixins
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
-from .models import Animal, Brand, Category, Product, ProductOptions, Article, Comments, InfoShop, Consultation
+from .models import Animal, Brand, Category, Product, ProductOptions, Article, Comments, InfoShop, Consultation, Order
 from .serializers import (AnimalSerializer, BrandSerializer, CategorySerializer,
                           ProductSerializer, ProductOptionsSerializer, ArticleSerializer,  # CommentsSerializer,
-                          InfoShopSerializer, CommentsSerializer, )
+                          InfoShopSerializer, CommentsSerializer, OrderSerializer, )
 from collections import OrderedDict
 
 from django.shortcuts import render
@@ -120,30 +120,44 @@ class InfoShopView(viewsets.ViewSet):
     serializer_class = InfoShopSerializer
 
 
+class OrderViewSet(mixins.CreateModelMixin, mixins.ListModelMixin,
+                   viewsets.GenericViewSet):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+
+    def create(self, request, *args, **kwargs):
+        pass
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+
 #  Добавить токен tele_bot_token и chat_id пользователя, которому будут приходить сообщения (chat_id у @userinfobot)
 #  Пользователь, которому будут приходить сообщения должен добавить себе своего бота.
 # Telegram bot GLOBAL SETTINGS
-tele_bot_token = '5259906909:AAGwzQMWTVFTVuQha9NPOROQjzVGxYCVfys'
-chat_id = 821421337
+# tele_bot_token = '5259906909:AAGwzQMWTVFTVuQha9NPOROQjzVGxYCVfys'
+# chat_id = 821421337
 
 
-def bot(request):
-    """Телеграм бот из формы для консультации"""
-    cons = ConsultationForm()
-    if request.method == 'POST':
-        cons = ConsultationForm(request.POST)
-        if cons.is_valid():
-            name = cons.cleaned_data['name']
-            phone_number = cons.cleaned_data['phone']
-            Consultation.objects.update_or_create(name=name, phone=phone_number)
-            requests.post(
-                url=f'https://api.telegram.org/bot{tele_bot_token}/sendMessage',
-                data={'chat_id': chat_id,
-                      'text': f'* Нужна консультация:*  {phone_number}',
-                      'parse_mode': 'markdown'}).json()
-            return render(request, template_name='bot.html')  # Переход после заполнения формы
-    context = {'cons': cons}
-    return render(request, 'bot.html', context=context)
+# def bot(request):
+#     """Телеграм бот из формы для консультации"""
+#     cons = ConsultationForm()
+#     if request.method == 'POST':
+#         cons = ConsultationForm(request.POST)
+#         if cons.is_valid():
+#             name = cons.cleaned_data['name']
+#             phone_number = cons.cleaned_data['phone']
+#             Consultation.objects.update_or_create(name=name, phone=phone_number)
+#             requests.post(
+#                 url=f'https://api.telegram.org/bot{tele_bot_token}/sendMessage',
+#                 data={'chat_id': chat_id,
+#                       'text': f'* Нужна консультация:*  {phone_number}',
+#                       'parse_mode': 'markdown'}).json()
+#             return render(request, template_name='bot.html')  # Переход после заполнения формы
+#     context = {'cons': cons}
+#     return render(request, 'bot.html', context=context)
 
 # def bot(request):
 #     """Главная страница с информацией"""
