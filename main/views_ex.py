@@ -50,10 +50,9 @@ def export_csv(request):
         response = HttpResponse(content_type='')
         response['Content-Disposition'] = 'attachment; filename="DB.xlsx"'  # Название файла для отправки
         writer = csv.writer(response)
-        writer.writerow(['article_number', 'name', 'animal', 'brand', 'category', 'price'])  # , 'stock_balance'
+        writer.writerow(['name', 'brand', 'category'])  # , 'stock_balance'
         # writer.writerow(['Артикул', 'Название товара', 'Тип животного', 'Бренд', 'Категория', 'Цена', 'Остаток'])
-        users = Product.objects.all().values_list('options__article_number', 'name', 'animal__name', 'brand__name',
-                                                  'category__name', 'options__price')  # , 'options__stock_balance')
+        users = Product.objects.all().values_list('name', 'brand__name', 'category__name')  # , 'options__stock_balance')
 
         # writer.writerow(['article_number', 'product', 'partial', 'price', 'size', 'unit', 'stock_balance', 'is_active',
         #                  'date_created', 'date_updated'])
