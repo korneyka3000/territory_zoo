@@ -6,11 +6,15 @@ from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
-from .models import Animal, Brand, Category, Product, ProductOptions, Article, Comments, InfoShop
+from .models import Animal, Brand, Category, Product, ProductOptions, Article, Comments, InfoShop, Consultation
 from .serializers import (AnimalSerializer, BrandSerializer, CategorySerializer,
                           ProductSerializer, ProductOptionsSerializer, ArticleSerializer,  # CommentsSerializer,
                           InfoShopSerializer, CommentsSerializer, )
 from collections import OrderedDict
+
+from django.shortcuts import render
+from .forms import ConsultationForm
+import requests  # Не удалять нужен для Telegram bot
 
 
 class Pagination(PageNumberPagination):
@@ -33,7 +37,6 @@ class Pagination(PageNumberPagination):
 
 
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
-
     serializer_class = ProductSerializer
     pagination_class = Pagination
     filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
@@ -63,7 +66,6 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class BrandViewSet(viewsets.ReadOnlyModelViewSet):
-
     queryset = Brand.objects.all()
     serializer_class = BrandSerializer
 
@@ -78,7 +80,6 @@ class BrandViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class AnimalViewSet(viewsets.ReadOnlyModelViewSet):
-
     queryset = Animal.objects.all()
     serializer_class = AnimalSerializer
 
@@ -93,19 +94,16 @@ class AnimalViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
-
     queryset = Category.objects.filter(is_active=True)
     serializer_class = CategorySerializer
 
 
 class ProductOptionsViewSet(viewsets.ReadOnlyModelViewSet):
-
     queryset = ProductOptions.objects.filter(is_active=True)
     serializer_class = ProductOptionsSerializer
 
 
 class ArticleViewSet(viewsets.ReadOnlyModelViewSet):
-
     queryset = Article.objects.filter(is_active=True)
     serializer_class = ArticleSerializer
 
@@ -119,6 +117,42 @@ class CommentsView(viewsets.ViewSet):
 
 
 class InfoShopView(viewsets.ViewSet):
-
     queryset = InfoShop.objects.filter(published=True)
     serializer_class = InfoShopSerializer
+
+
+#  Добавить токен tele_bot_token и chat_id пользователя, которому будут приходить сообщения (chat_id у @userinfobot)
+#  Пользователь, которому будут приходить сообщения должен добавить себе своего бота.
+# Telegram bot GLOBAL SETTINGS
+tele_bot_token = '5259906909:AAGwzQMWTVFTVuQha9NPOROQjzVGxYCVfys'
+chat_id = 821421337
+
+
+def bot(request):
+    """Телеграм бот из формы для консультации"""
+    cons = ConsultationForm()
+    if request.method == 'POST':
+        cons = ConsultationForm(request.POST)
+        if cons.is_valid():
+            name = cons.cleaned_data['name']
+            phone_number = cons.cleaned_data['phone']
+            Consultation.objects.update_or_create(name=name, phone=phone_number)
+            requests.post(
+                url=f'https://api.telegram.org/bot{tele_bot_token}/sendMessage',
+                data={'chat_id': chat_id,
+                      'text': f'* Нужна консультация:*  {phone_number}',
+                      'parse_mode': 'markdown'}).json()
+            return render(request, template_name='bot.html')  # Переход после заполнения формы
+    context = {'cons': cons}
+    return render(request, 'bot.html', context=context)
+
+# def bot(request):
+#     """Главная страница с информацией"""
+#     form = ConsultationForm()
+#     if request.method == 'POST':
+#         form = ConsultationForm(request.POST)
+#         if form.is_valid():
+#             form.save()
+#             return render(request, template_name='bot.html')  # Переход после заполнения формы
+#     context = {'form': form}
+#     return render(request, template_name='home.html', context=context)

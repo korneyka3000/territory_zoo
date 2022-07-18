@@ -4,8 +4,10 @@ from django.forms import TextInput
 from django.http import HttpResponse
 from django.utils.safestring import mark_safe
 from import_export.admin import ImportExportModelAdmin
-from .models import Product, Brand, Animal, Category, ProductOptions, ProductImage, Article, Comments, InfoShop
+from .models import Product, Brand, Animal, Category, ProductOptions, ProductImage, Article, Comments, InfoShop, \
+    Consultation
 from .resources import ProductAdminResource, AnimalAdminResource, BrandAdminResource
+
 admin.site.site_header = 'Территория ZOO'  # Надпись в админке сайта
 
 
@@ -33,7 +35,8 @@ class ProductAdmin(ImportExportModelAdmin):
     formfield_overrides = {models.CharField: {'widget': TextInput(attrs={'size': '90'})}}
     fieldsets = (
         ('ОСНОВНЫЕ ДАННЫЕ', {'fields': ('name', 'brand', 'animal', 'category',)}),
-        ('ИНФОРМАЦИЯ О ТОВАРЕ', {'fields': ('popular', 'description', 'features', 'composition', 'additives', 'analysis',)}),
+        ('ИНФОРМАЦИЯ О ТОВАРЕ',
+         {'fields': ('popular', 'description', 'features', 'composition', 'additives', 'analysis',)}),
     )
     list_display = ('name', 'brand', 'category', 'date_added', 'popular', 'is_active', 'product_options',)
     list_editable = ('is_active', 'popular')
@@ -49,6 +52,7 @@ class ProductAdmin(ImportExportModelAdmin):
     #     # return mark_safe(f'<a class="button" >Добавить</a>')
     #     return mark_safe(f'<a href="localhost" class ="button"> Главная <a>')
     # button.short_description = 'Ссылка на сайт'
+
 
 @admin.register(Animal)
 class AnimalAdmin(ImportExportModelAdmin):
@@ -139,8 +143,8 @@ class CommentsAdmin(admin.ModelAdmin):
 @admin.register(InfoShop)
 class InfoShopAdmin(admin.ModelAdmin):
     """Информация о магазине"""
-    list_display = ('address', 'time_weekdays', 'time_weekend', 'phone_number',)# 'published',
-    list_editable = ('time_weekdays', 'time_weekend', 'phone_number',)# 'published',
+    list_display = ('address', 'time_weekdays', 'time_weekend', 'phone_number',)  # 'published',
+    list_editable = ('time_weekdays', 'time_weekend', 'phone_number',)  # 'published',
 
     def add_view(self, request):
         if request.method == "POST":
@@ -151,3 +155,9 @@ class InfoShopAdmin(admin.ModelAdmin):
                 # you can't create more than one
                 return HttpResponse("Только один адрес доступен, измените существующий")
         return super(InfoShopAdmin, self).add_view(request)
+
+
+@admin.register(Consultation)
+class ConsultationAdmin(admin.ModelAdmin):
+    list_display = ('name', 'phone',)
+    list_display_links = ('name', 'phone',)
