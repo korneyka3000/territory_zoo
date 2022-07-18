@@ -1,7 +1,7 @@
 from django.urls import path
 from rest_framework.routers import DefaultRouter
 from main.views import ProductViewSet, BrandViewSet, AnimalViewSet, CategoryViewSet, ProductOptionsViewSet, \
-    ArticleViewSet, CommentsView, InfoShopView
+    ArticleViewSet, CommentsView, InfoShopView, bot
 from main.views_ex import import_csv, export_csv
 
 router = DefaultRouter()
@@ -16,6 +16,7 @@ router.register(r'comments', CommentsView, basename='comments')
 urlpatterns = [
     path('import/', import_csv),
     path('export/', export_csv),
+    path('bot/', bot),
 ]
 urlpatterns += router.urls
 

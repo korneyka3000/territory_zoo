@@ -35,7 +35,8 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
-    #TODO: check it and make exceptions
+
+    # TODO: check it and make exceptions
     def min_price_options(self):
         list_of_prices = []
         options = self.options.filter(partial=False).filter(is_active=True)
@@ -66,8 +67,10 @@ class Product(models.Model):
 
 class ProductImage(models.Model):
     """Изображение товара"""
-    product = models.ForeignKey('Product', related_name='images', verbose_name='Изображение товара', on_delete=models.CASCADE)
-    image = models.ImageField(verbose_name='Изображение товара', blank=True, null=True, upload_to='photos_products/Y/M/')
+    product = models.ForeignKey('Product', related_name='images', verbose_name='Изображение товара',
+                                on_delete=models.CASCADE)
+    image = models.ImageField(verbose_name='Изображение товара', blank=True, null=True,
+                              upload_to='photos_products/Y/M/')
 
     class Meta:
         verbose_name = 'Изображение товара'
@@ -231,3 +234,16 @@ class InfoShop(models.Model):
 
     def __str__(self):
         return f'{self.address}, {self.metro}'
+
+
+class Consultation(models.Model):
+    """Консультация"""
+    name = models.CharField('Имя', max_length=100, blank=True, null=True)
+    phone = models.CharField('Номер телефона', max_length=20)
+
+    class Meta:
+        verbose_name = 'Консультация'
+        verbose_name_plural = 'КОНСУЛЬТАЦИЯ'
+
+    def __str__(self):
+        return f'{self.name} : {self.phone}'
