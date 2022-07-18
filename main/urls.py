@@ -17,12 +17,8 @@ urlpatterns = [
     path('import/', import_csv),
     path('export/', export_csv),
 ]
-
-# urlpatterns = [
-#     # path('comments/', CommentsView.as_view()),#, name='comments'),
-#     # path('shop-info/', InfoShopView.as_view()),#, name='shop_info'),
-# ]
 urlpatterns += router.urls
+
 
 
 

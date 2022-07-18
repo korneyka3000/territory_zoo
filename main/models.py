@@ -102,6 +102,9 @@ class ProductOptions(models.Model):
         ordering = ('partial', 'size',)
 
     def save(self, *args, **kwargs):
+        if self.partial:
+            self.size = '1000'
+            self.unit = 1
         super(ProductOptions, self).save(*args, **kwargs)
         instance = Product.objects.get(id=self.product_id)
         instance.save()

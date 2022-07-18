@@ -144,10 +144,6 @@ class InfoShopAdmin(admin.ModelAdmin):
 
     def add_view(self, request):
         if request.method == "POST":
-            print(request)
-            # Assuming you want a single, global HomePage object
             if InfoShop.objects.count() >= 1:
-                # redirect to a page saying
-                # you can't create more than one
                 return HttpResponse("Только один адрес доступен, измените существующий")
         return super(InfoShopAdmin, self).add_view(request)

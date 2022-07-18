@@ -1,9 +1,8 @@
-from django.db.models import Prefetch
+from django.db.models import Prefetch, Count, Avg, Min, Q, Exists, Case, When, F
 from rest_framework import viewsets, generics
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from rest_framework.filters import OrderingFilter, SearchFilter
-from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from .models import Animal, Brand, Category, Product, ProductOptions, Article, Comments, InfoShop
@@ -39,7 +38,7 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
     filterset_fields = ('animal', 'category',)
     search_fields = ('name',)
-    ordering_fields = ('name', 'min_price', 'popular',)
+    ordering_fields = ('name', 'min_price', 'popular', 'minimal_price')
     ordering = ('name',)
 
     def list(self, request, *args, **kwargs):
@@ -49,7 +48,7 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
         return response
 
     def get_queryset(self):
-        queryset = Product.objects.all()
+        queryset = Product.objects.all().annotate(minimal_price=Min('options__price', filter=Q(options__partial=False)))
         brands = self.request.query_params.getlist('brand')
         if brands:
             queryset = queryset.filter(brand_id__in=brands)
