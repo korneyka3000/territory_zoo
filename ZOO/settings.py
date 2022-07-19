@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'ckeditor',
     'import_export',
 
+    'admin_reorder',
+
 ]
 
 # REST_FRAMEWORK = {
@@ -64,7 +66,40 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'admin_reorder.middleware.ModelAdminReorder',
 ]
+
+ADMIN_REORDER = (
+    {
+        'app': 'main',
+        'label': 'Администрация сайта',  # название поля
+        'models': [
+            {'model': 'auth.User', 'label': 'Пользователи'},
+        ]
+    },
+    {
+        'app': 'main',
+        'label': 'База товаров интернет магазина',
+        'models': [
+            {'model': 'main.Product', 'label': 'Продукты'},
+            {'model': 'main.Brand', 'label': 'Бренды'},
+            {'model': 'main.Animal', 'label': 'Животные'},
+            {'model': 'main.Category', 'label': 'Категории'},
+            {'model': 'main.Order', 'label': 'Заказы'},
+        ]
+    },
+    {
+        'app': 'main',
+        'label': 'Социальны',
+        'models': [
+            {'model': 'main.Comments', 'label': 'Отзыв о магазине'},
+            {'model': 'main.InfoShop', 'label': 'Информация о магазине'},
+            {'model': 'main.Consultation', 'label': 'Консультация'},
+            {'model': 'main.Customer', 'label': 'Покупатели'},
+        ]
+    }
+)
+
 CORS_ALLOW_ALL_ORIGINS = True
 ROOT_URLCONF = 'ZOO.urls'
 
@@ -106,7 +141,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators

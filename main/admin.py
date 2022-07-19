@@ -201,6 +201,8 @@ class OrderAdmin(admin.ModelAdmin):
     list_per_page = 20
     inlines = [OrderItemInlineAdmin]
 
+
+
 # admin.site.register(Group, GroupAdmin)
 # admin.site.register(User, UserAdmin)
 #
@@ -209,11 +211,11 @@ class OrderAdmin(admin.ModelAdmin):
 # admin.site.register(ProductOptions)
 # admin.site.register(Animal)
 # admin.site.register(Brand)
-# # admin.site.register(Category)
-#
+# admin.site.register(Category)
 # admin.site.register(Order)
 # admin.site.register(Consultation)
 # admin.site.register(Customer)
 # admin.site.register(Comments)
-#
 # admin.site.register(InfoShop)
+
+

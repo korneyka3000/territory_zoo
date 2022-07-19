@@ -316,7 +316,8 @@ class OrderItem(models.Model):
     # TODO: нужна ли цена и надо ли просчитывать тут заказ
 
     def __str__(self):
-        return f'{self.order, self.product, self.quantity}'
+        return 'Описание товара'
+        # return f'{self.order}. Колличество товаров:{self.quantity}'
 
     class Meta:
         verbose_name = 'ЗАКАЗАННЫЙ ТОВАР'
