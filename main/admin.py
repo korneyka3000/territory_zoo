@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from django.utils.safestring import mark_safe
 from import_export.admin import ImportExportModelAdmin
 from .models import Product, Brand, Animal, Category, ProductOptions, ProductImage, Article, Comments, InfoShop, \
-    Consultation
+    Consultation, Customer, Order, OrderItem
 from .resources import ProductAdminResource, AnimalAdminResource, BrandAdminResource
 
 admin.site.site_header = 'Территория ZOO'  # Надпись в админке сайта
@@ -157,3 +157,34 @@ class InfoShopAdmin(admin.ModelAdmin):
 class ConsultationAdmin(admin.ModelAdmin):
     list_display = ('name', 'phone',)
     list_display_links = ('name', 'phone',)
+
+
+# @admin.register(Order)
+class OrderInlineAdmin(admin.TabularInline):
+    model = Order
+
+
+# @admin.register(OrderItem)
+class OrderItemInlineAdmin(admin.TabularInline):
+    model = OrderItem
+    extra = 0
+
+@admin.register(Customer)
+class CustomerAdmin(admin.ModelAdmin):
+    list_display = ('customer_name', 'phone_number',)
+    list_display_links = ('customer_name',)
+    # list_editable = ('customer_name', 'phone_number',)
+    list_filter = ('customer_name', 'phone_number',)
+    list_per_page = 20
+    inlines = [OrderInlineAdmin]
+
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ('customer', 'paid', 'created',)
+    # list_display_links = ('paid', 'created',)
+    list_editable = ('paid',)
+    readonly_fields = ('created',)
+    list_filter = ('customer', 'paid', 'created',)
+    list_per_page = 20
+    inlines = [OrderItemInlineAdmin]

@@ -1,7 +1,7 @@
 from django.utils.html import strip_tags
 from rest_framework import serializers
 from .models import (Animal, Article, Brand, Category, Comments, InfoShop,
-                     Product, ProductOptions, ProductImage,)
+                     Product, ProductOptions, ProductImage, Order, Customer, OrderItem, )
 
 
 class ProductOptionsSerializer(serializers.ModelSerializer):
@@ -76,3 +76,24 @@ class InfoShopSerializer(serializers.ModelSerializer):
     class Meta:
         model = InfoShop
         fields = '__all__'
+
+
+class CustomerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Customer
+        fields = ('phone_number', 'customer_name',)
+
+
+class OrderItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderItem
+        fields = ('product', 'quantity')
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    customer = CustomerSerializer(read_only=True, many=False)
+    items = OrderItemSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Order
+        fields = ('customer', 'paid', 'items')
