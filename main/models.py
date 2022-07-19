@@ -82,22 +82,25 @@ class ProductImage(models.Model):
 
 class ProductOptions(models.Model):
     """Доступные фасовки для товара(разные фасовки по весу, объёму и тд. ...)"""
-    UNIT_CHOICES = (
-        (0, 'шт.'),
-        # (1, 'литр'),
-        (1, 'на вес'),
-    )
+    # UNIT_CHOICES = (
+    #     (0, 'шт.',),
+    #     # (1, 'литр'),
+    #     (1, 'на вес',),
+    # )
     article_number = models.CharField(verbose_name='Артикул товара', max_length=200, unique=True, blank=True, null=True)
     product = models.ForeignKey('Product', related_name='options', on_delete=models.CASCADE, verbose_name='Варианты')
     partial = models.BooleanField(verbose_name='На развес', default=False)
     price = models.DecimalField(verbose_name='Цена', max_digits=8, decimal_places=2)
     size = models.CharField(verbose_name='Объём упаковки', max_length=50, blank=False, null=False)
-    unit = models.IntegerField(verbose_name='Единица измерения', choices=UNIT_CHOICES, default=0)
+    # unit = models.IntegerField(verbose_name='Единица измерения', choices=UNIT_CHOICES, default=0)
     stock_balance = models.PositiveIntegerField(verbose_name='Остаток на складе')
     is_active = models.BooleanField(verbose_name='Активно', default=True)
     date_created = models.DateTimeField(verbose_name='Дата создания', auto_now_add=True, blank=True, null=True)
     date_updated = models.DateTimeField(verbose_name='Дата обновления', auto_now=True, blank=True,
                                         null=True)  # TODO: later remove blank and null TRUE
+
+    def __str__(self):
+        return f'{self.product.name, self.article_number}'
 
     class Meta:
         verbose_name = 'Вариант фасовки'
@@ -105,9 +108,9 @@ class ProductOptions(models.Model):
         ordering = ('partial', 'size',)
 
     def save(self, *args, **kwargs):
-        if self.partial:
-            self.size = '1000'
-            self.unit = 1
+        # if self.partial:
+        #     self.size = '1000'
+        #     self.unit = 1
         super(ProductOptions, self).save(*args, **kwargs)
         instance = Product.objects.get(id=self.product_id)
         instance.save()
@@ -247,3 +250,58 @@ class Consultation(models.Model):
 
     def __str__(self):
         return f'{self.name} : {self.phone}'
+
+
+class Customer(models.Model):
+    """Покупатель"""
+    phone_number = models.TextField('Номер телефона', max_length=13, blank=True, null=True, unique=True)
+    customer_name = models.TextField('Имя покупателя', max_length=50, blank=True, null=True)
+    first_order_date = models.DateTimeField('Дата первого заказа', auto_now_add=True)
+    # TODO: Нужны ли ещё поля для учёта статистики
+
+    class Meta:
+        verbose_name = 'ПОКУПАТЕЛЬ'
+        verbose_name_plural = 'ПОКУПАТЕЛИ'
+        ordering = ('first_order_date',)
+
+    def __str__(self):
+        return f'{self.customer_name}: {self.phone_number}'
+
+
+class Order(models.Model):
+    """Заказы"""
+    PAID_CHOICES = (
+        (1, 'Да',),
+        (0, 'Нет',),
+    )
+    customer = models.ForeignKey('Customer', related_name='order', on_delete=models.CASCADE)
+    created = models.DateTimeField('Время создания заказа', auto_now_add=True)
+    paid = models.IntegerField(verbose_name='Оплачен', choices=PAID_CHOICES, default=0)
+    # TODO: добавить цену на весь заказ?
+    # TODO добавить кол-во товаров в заказе?
+
+    class Meta:
+        verbose_name = 'ЗАКАЗ'
+        verbose_name_plural = 'ЗАКАЗЫ'
+        ordering = ('-created',)
+
+    def __str__(self):
+        return f'{self.customer.customer_name, self.customer.phone_number, self.paid}'
+
+
+class OrderItem(models.Model):
+    """Товар в заказе"""
+    order = models.ForeignKey('Order', related_name='items', on_delete=models.CASCADE)
+    product = models.ForeignKey('ProductOptions', to_field='article_number',
+                                related_name='order_items', on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+    # TODO: нужна ли цена и надо ли просчитывать тут заказ
+
+    def __str__(self):
+        return f'{self.order, self.product, self.quantity}'
+
+    class Meta:
+        verbose_name = 'ЗАКАЗАННЫЙ ТОВАР'
+        verbose_name_plural = 'ЗАКАЗАННЫЕ ТОВАРЫ'
+
+
