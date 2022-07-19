@@ -11,8 +11,7 @@ class Product(models.Model):
         (1, 'Популярный',),
         (2, 'Очень популярный',),
     )
-    unique_name = models.CharField(max_length=200, null=True, blank=True, unique=True)
-    name = models.CharField(verbose_name='Название товара', max_length=150, blank=False, null=False)  # unique=True?
+    name = models.CharField(verbose_name='Название товара', max_length=150, unique=True, blank=False, null=False)  # unique=True?
     description = RichTextField(verbose_name='Описание товара', null=True, blank=True, config_name='default')
     features = RichTextField(verbose_name='Ключевые особенности', null=True, blank=True, config_name='default')
     composition = RichTextField(verbose_name='Состав', null=True, blank=True, config_name='default')
@@ -37,27 +36,27 @@ class Product(models.Model):
         return self.name
 
     # TODO: check it and make exceptions
-    def min_price_options(self):
-        list_of_prices = []
-        options = self.options.filter(partial=False).filter(is_active=True)
-        print(options)
-        if options:
-            for option in self.options.all():
-                list_of_prices.append(option.price)
-            self.min_price = min(list_of_prices)
-        elif not self.options.all():
-            self.is_active = False
-        else:
-            self.min_price = self.options.price.first()
+    # def min_price_options(self):
+    #     list_of_prices = []
+    #     options = self.options.filter(partial=False).filter(is_active=True)
+    #     print(options)
+    #     if options:
+    #         for option in self.options.all():
+    #             list_of_prices.append(option.price)
+    #         self.min_price = min(list_of_prices)
+    #     elif not self.options.all():
+    #         self.is_active = False
+    #     else:
+    #         self.min_price = self.options.price.first()
 
-    def save(self, *args, **kwargs):
-        super(Product, self).save(*args, **kwargs)
-        # animals = ''
-        # for pet in self.animal.all():
-        #     animals += pet.name
-        # self.unique_name = f'{animals} {self.category.name} {self.brand.name} {self.name}'
-        self.min_price_options()
-        super(Product, self).save()
+    # def save(self, *args, **kwargs):
+    #     super(Product, self).save(*args, **kwargs)
+    #     # animals = ''
+    #     # for pet in self.animal.all():
+    #     #     animals += pet.name
+    #     # self.unique_name = f'{animals} {self.category.name} {self.brand.name} {self.name}'
+    #     self.min_price_options()
+    #     super(Product, self).save()
 
     def product_options(self):
         return self.options.count()
@@ -80,6 +79,17 @@ class ProductImage(models.Model):
         return str(self.product.name)
 
 
+class Units(models.Model):
+    unit_name = models.CharField(max_length=50, verbose_name='Название Ед. измерения')
+
+    def __str__(self):
+        return self.unit_name
+
+    class Meta:
+        verbose_name='Еденица измерения'
+        verbose_name_plural='ЕДИНИЦЫ ИЗМЕРЕНИЯ'
+
+
 class ProductOptions(models.Model):
     """Доступные фасовки для товара(разные фасовки по весу, объёму и тд. ...)"""
     # UNIT_CHOICES = (
@@ -92,12 +102,13 @@ class ProductOptions(models.Model):
     partial = models.BooleanField(verbose_name='На развес', default=False)
     price = models.DecimalField(verbose_name='Цена', max_digits=8, decimal_places=2)
     size = models.CharField(verbose_name='Объём упаковки', max_length=50, blank=False, null=False)
-    # unit = models.IntegerField(verbose_name='Единица измерения', choices=UNIT_CHOICES, default=0)
     stock_balance = models.PositiveIntegerField(verbose_name='Остаток на складе')
     is_active = models.BooleanField(verbose_name='Активно', default=True)
     date_created = models.DateTimeField(verbose_name='Дата создания', auto_now_add=True, blank=True, null=True)
     date_updated = models.DateTimeField(verbose_name='Дата обновления', auto_now=True, blank=True,
                                         null=True)  # TODO: later remove blank and null TRUE
+
+    units = models.ForeignKey('Units',related_name='prods', verbose_name='Единица измерения', on_delete=models.CASCADE)
 
     def __str__(self):
         return f'{self.product.name, self.article_number}'
@@ -107,13 +118,13 @@ class ProductOptions(models.Model):
         verbose_name_plural = 'ВАРИАНТЫ ФАСОВКИ'
         ordering = ('partial', 'size',)
 
-    def save(self, *args, **kwargs):
-        # if self.partial:
-        #     self.size = '1000'
-        #     self.unit = 1
-        super(ProductOptions, self).save(*args, **kwargs)
-        instance = Product.objects.get(id=self.product_id)
-        instance.save()
+    # def save(self, *args, **kwargs):
+    #     # if self.partial:
+    #     #     self.size = '1000'
+    #     #     self.unit = 1
+    #     super(ProductOptions, self).save(*args, **kwargs)
+    #     instance = Product.objects.get(id=self.product_id)
+    #     instance.save()
 
 
 class Animal(models.Model):
@@ -222,7 +233,7 @@ class InfoShop(models.Model):
     """Информация о магазине - адрес, телефон, ст.метро и тд."""
     address = models.CharField(verbose_name='Адрес магазина', max_length=100, blank=True, null=True)
     metro = models.CharField(verbose_name='Станция метро', max_length=50, blank=True, null=True)
-    time_weekdays = models.CharField(verbose_name='Время работы (будни)', max_length=50, blank=True, null=True)
+    time_weekdays = models.CharField(verbose_name='Время работы (будние)', max_length=50, blank=True, null=True)
     time_weekend = models.CharField(verbose_name='Время работы (выходные)', max_length=50, blank=True, null=True)
     phone_number = models.CharField(verbose_name='Номер телефона', max_length=20, blank=True, null=True)
     social = models.TextField(verbose_name='Социальная сеть', help_text='Ссылка на страницу', blank=True, null=True)
