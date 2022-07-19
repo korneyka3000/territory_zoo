@@ -1,19 +1,27 @@
 from django.utils.html import strip_tags
 from rest_framework import serializers
 from .models import (Animal, Article, Brand, Category, Comments, InfoShop,
-                     Product, ProductOptions, ProductImage, Order, Customer, OrderItem, )
+                     Product, ProductOptions, ProductImage, Order, Customer, OrderItem, Units, )
+
+
+class UnitsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Units
+        exclude = ('id',)
 
 
 class ProductOptionsSerializer(serializers.ModelSerializer):
+    units = UnitsSerializer(read_only=True)
+
     class Meta:
         model = ProductOptions
-        exclude = ('product', 'is_active', 'date_created', 'date_updated')
+        exclude = ('product', 'is_active', 'date_created', 'date_updated',)
 
 
 class ProductImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductImage
-        fields = '__all__'
+        exclude = ('product',)
 
 
 class ProductSerializer(serializers.ModelSerializer):

@@ -108,7 +108,7 @@ class ProductOptions(models.Model):
     date_updated = models.DateTimeField(verbose_name='Дата обновления', auto_now=True, blank=True,
                                         null=True)  # TODO: later remove blank and null TRUE
 
-    units = models.ForeignKey('Units',related_name='prods', verbose_name='Единица измерения', on_delete=models.CASCADE)
+    units = models.ForeignKey('Units', related_name='prods', verbose_name='Единица измерения', on_delete=models.CASCADE)
 
     def __str__(self):
         return f'{self.product.name, self.article_number}'
