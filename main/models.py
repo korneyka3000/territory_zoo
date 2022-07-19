@@ -1,4 +1,5 @@
 from ckeditor.fields import RichTextField
+from django.contrib.admin import AdminSite
 from django.contrib.auth.models import User
 from django.db import models
 
@@ -11,7 +12,7 @@ class Product(models.Model):
         (1, 'Популярный',),
         (2, 'Очень популярный',),
     )
-    name = models.CharField(verbose_name='Название товара', max_length=150, unique=True, blank=False, null=False)  # unique=True?
+    name = models.CharField(verbose_name='Название товара', max_length=150, unique=True, blank=False, null=False)
     description = RichTextField(verbose_name='Описание товара', null=True, blank=True, config_name='default')
     features = RichTextField(verbose_name='Ключевые особенности', null=True, blank=True, config_name='default')
     composition = RichTextField(verbose_name='Состав', null=True, blank=True, config_name='default')
@@ -80,14 +81,15 @@ class ProductImage(models.Model):
 
 
 class Units(models.Model):
+    """Единицы измерения"""
     unit_name = models.CharField(max_length=50, verbose_name='Название Ед. измерения')
 
     def __str__(self):
         return self.unit_name
 
     class Meta:
-        verbose_name='Еденица измерения'
-        verbose_name_plural='ЕДИНИЦЫ ИЗМЕРЕНИЯ'
+        verbose_name = 'Еденица измерения'
+        verbose_name_plural = 'ЕДИНИЦЫ ИЗМЕРЕНИЯ'
 
 
 class ProductOptions(models.Model):
@@ -108,7 +110,7 @@ class ProductOptions(models.Model):
     date_updated = models.DateTimeField(verbose_name='Дата обновления', auto_now=True, blank=True,
                                         null=True)  # TODO: later remove blank and null TRUE
 
-    units = models.ForeignKey('Units',related_name='prods', verbose_name='Единица измерения', on_delete=models.CASCADE)
+    units = models.ForeignKey('Units', related_name='prods', verbose_name='Единица измерения', on_delete=models.CASCADE)
 
     def __str__(self):
         return f'{self.product.name, self.article_number}'
@@ -252,22 +254,25 @@ class InfoShop(models.Model):
 
 class Consultation(models.Model):
     """Консультация"""
-    name = models.CharField('Имя', max_length=100, blank=True, null=True)
-    phone = models.CharField('Номер телефона', max_length=20)
+    name = models.CharField(verbose_name='Имя', max_length=100, blank=True, null=True)
+    phone = models.CharField(verbose_name='Номер телефона', max_length=20)
+
+    # date_added = models.DateTimeField(verbose_name='Дата обращения', auto_now_add=True)
 
     class Meta:
         verbose_name = 'Консультация'
         verbose_name_plural = 'КОНСУЛЬТАЦИЯ'
 
     def __str__(self):
-        return f'{self.name} : {self.phone}'
+        return f'{self.name}: {self.phone}'
 
 
 class Customer(models.Model):
-    """Покупатель"""
-    phone_number = models.TextField('Номер телефона', max_length=13, blank=True, null=True, unique=True)
-    customer_name = models.TextField('Имя покупателя', max_length=50, blank=True, null=True)
-    first_order_date = models.DateTimeField('Дата первого заказа', auto_now_add=True)
+    """Покупатели"""
+    phone_number = models.TextField(verbose_name='Номер телефона', max_length=13, blank=True, null=True, unique=True)
+    customer_name = models.TextField(verbose_name='Имя покупателя', max_length=50, blank=True, null=True)
+    first_order_date = models.DateTimeField(verbose_name='Дата первого заказа', auto_now_add=True)
+
     # TODO: Нужны ли ещё поля для учёта статистики
 
     class Meta:
@@ -285,9 +290,10 @@ class Order(models.Model):
         (1, 'Да',),
         (0, 'Нет',),
     )
-    customer = models.ForeignKey('Customer', related_name='order', on_delete=models.CASCADE)
-    created = models.DateTimeField('Время создания заказа', auto_now_add=True)
+    customer = models.ForeignKey('Customer', verbose_name='Покупатель', related_name='order', on_delete=models.CASCADE)
+    created = models.DateTimeField(verbose_name='Время создания заказа', auto_now_add=True)
     paid = models.IntegerField(verbose_name='Оплачен', choices=PAID_CHOICES, default=0)
+
     # TODO: добавить цену на весь заказ?
     # TODO добавить кол-во товаров в заказе?
 
@@ -297,15 +303,16 @@ class Order(models.Model):
         ordering = ('-created',)
 
     def __str__(self):
-        return f'{self.customer.customer_name, self.customer.phone_number, self.paid}'
+        return f'Покупатель: {self.customer.customer_name}. Телефон: {self.customer.phone_number}. Заказ оплачен: {self.get_paid_display()}'
 
 
 class OrderItem(models.Model):
-    """Товар в заказе"""
-    order = models.ForeignKey('Order', related_name='items', on_delete=models.CASCADE)
-    product = models.ForeignKey('ProductOptions', to_field='article_number',
+    """Заказанные товары"""
+    order = models.ForeignKey('Order', related_name='items', verbose_name='Заказ', on_delete=models.CASCADE)
+    product = models.ForeignKey('ProductOptions', to_field='article_number', verbose_name='Товар',
                                 related_name='order_items', on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
+
     # TODO: нужна ли цена и надо ли просчитывать тут заказ
 
     def __str__(self):
@@ -316,3 +323,12 @@ class OrderItem(models.Model):
         verbose_name_plural = 'ЗАКАЗАННЫЕ ТОВАРЫ'
 
 
+# class MyAdminSite(AdminSite):
+#     """Сортировка полей в Admin-Django"""
+#     def get_app_list(self, request):
+#         app_dict = self._build_app_dict(request)
+#         app_list = sorted(app_dict.values(), key=lambda x: x['name'].lower())
+#         # TODO если надо сортировать по имени
+#         # for app in app_list:
+#         #    app['models'].sort(key=lambda x: x['name'])
+#         return app_list
