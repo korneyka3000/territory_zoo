@@ -314,5 +314,3 @@ class OrderItem(models.Model):
     class Meta:
         verbose_name = 'ЗАКАЗАННЫЙ ТОВАР'
         verbose_name_plural = 'ЗАКАЗАННЫЕ ТОВАРЫ'
-
-
