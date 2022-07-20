@@ -256,8 +256,7 @@ class Consultation(models.Model):
     """Консультация"""
     name = models.CharField(verbose_name='Имя', max_length=100, blank=True, null=True)
     phone = models.CharField(verbose_name='Номер телефона', max_length=20)
-
-    # date_added = models.DateTimeField(verbose_name='Дата обращения', auto_now_add=True)
+    date_added = models.DateTimeField(verbose_name='Дата обращения', auto_now_add=True)
 
     class Meta:
         verbose_name = 'Консультация'

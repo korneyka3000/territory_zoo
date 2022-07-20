@@ -70,13 +70,13 @@ MIDDLEWARE = [
 ]
 
 ADMIN_REORDER = (
-    {
-        'app': 'main',
-        'label': 'Администрация сайта',  # название поля
-        'models': [
-            {'model': 'auth.User', 'label': 'Пользователи'},
-        ]
-    },
+    # {
+    #     'app': 'main',
+    #     'label': 'Администрация сайта',  # название поля
+    #     'models': [
+    #         {'model': 'auth.User', 'label': 'Пользователи'},
+    #     ]
+    # },
     {
         'app': 'main',
         'label': 'База товаров интернет магазина',
@@ -85,7 +85,14 @@ ADMIN_REORDER = (
             {'model': 'main.Brand', 'label': 'Бренды'},
             {'model': 'main.Animal', 'label': 'Животные'},
             {'model': 'main.Category', 'label': 'Категории'},
+        ]
+    },
+    {
+        'app': 'main',
+        'label': 'Заказы Товаров',
+        'models': [
             {'model': 'main.Order', 'label': 'Заказы'},
+            {'model': 'main.Customer', 'label': 'Покупатели'},
         ]
     },
     {
@@ -94,8 +101,8 @@ ADMIN_REORDER = (
         'models': [
             {'model': 'main.Comments', 'label': 'Отзыв о магазине'},
             {'model': 'main.InfoShop', 'label': 'Информация о магазине'},
-            {'model': 'main.Consultation', 'label': 'Консультация'},
-            {'model': 'main.Customer', 'label': 'Покупатели'},
+            {'model': 'main.Consultation', 'label': 'Обратный звонок'},
+
         ]
     }
 )

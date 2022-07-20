@@ -161,10 +161,10 @@ class InfoShopAdmin(admin.ModelAdmin):
 @admin.register(Consultation)
 class ConsultationAdmin(admin.ModelAdmin):
     """Консультация"""
-    list_display = 'name', 'phone',  # 'date_added',
+    list_display = 'name', 'phone', 'date_added',
     list_display_links = 'name',
     search_fields = 'name', 'phone',
-    # list_filter = 'date_added',
+    list_filter = 'date_added',
 
 
 # @admin.register(Order)
