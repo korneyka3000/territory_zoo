@@ -48,7 +48,6 @@ INSTALLED_APPS = [
     'import_export',
 
     'admin_reorder',
-
 ]
 
 # REST_FRAMEWORK = {
@@ -113,8 +112,7 @@ ROOT_URLCONF = 'ZOO.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates']
-        ,
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

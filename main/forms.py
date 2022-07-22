@@ -6,5 +6,5 @@ class ConsultationForm(forms.ModelForm):
 
     class Meta:
         model = Consultation
-        fields = ('name', 'phone')
+        fields = 'name', 'phone'
 

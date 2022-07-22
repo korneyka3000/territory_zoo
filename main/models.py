@@ -268,8 +268,8 @@ class Consultation(models.Model):
 
 class Customer(models.Model):
     """Покупатели"""
-    phone_number = models.TextField(verbose_name='Номер телефона', max_length=13, blank=True, null=True, unique=True)
     customer_name = models.TextField(verbose_name='Имя покупателя', max_length=50, blank=True, null=True)
+    phone_number = models.TextField(verbose_name='Номер телефона', max_length=13, blank=True, null=True, unique=True)
     first_order_date = models.DateTimeField(verbose_name='Дата первого заказа', auto_now_add=True)
 
     # TODO: Нужны ли ещё поля для учёта статистики
