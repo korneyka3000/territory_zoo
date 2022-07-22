@@ -11,7 +11,7 @@ class Product(models.Model):
         (1, 'Популярный',),
         (2, 'Очень популярный',),
     )
-    name = models.CharField(verbose_name='Название товара', max_length=150, unique=True, blank=False, null=False)  # unique=True?
+    name = models.CharField(verbose_name='Название товара', max_length=150, unique=True, blank=False, null=False)
     description = RichTextField(verbose_name='Описание товара', null=True, blank=True, config_name='default')
     features = RichTextField(verbose_name='Ключевые особенности', null=True, blank=True, config_name='default')
     composition = RichTextField(verbose_name='Состав', null=True, blank=True, config_name='default')
@@ -24,8 +24,6 @@ class Product(models.Model):
                               null=True, blank=True)
     category = models.ForeignKey('Category', related_name='products', verbose_name='Категория',
                                  on_delete=models.PROTECT)
-    min_price = models.DecimalField(verbose_name='Минимальная цена вариантов продукта', max_digits=8, decimal_places=2,
-                                    null=True, blank=True)
     popular = models.IntegerField(verbose_name='Популярность', choices=POPULAR_CHOICES, default=0)
 
     class Meta:
@@ -34,29 +32,6 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
-
-    # TODO: check it and make exceptions
-    # def min_price_options(self):
-    #     list_of_prices = []
-    #     options = self.options.filter(partial=False).filter(is_active=True)
-    #     print(options)
-    #     if options:
-    #         for option in self.options.all():
-    #             list_of_prices.append(option.price)
-    #         self.min_price = min(list_of_prices)
-    #     elif not self.options.all():
-    #         self.is_active = False
-    #     else:
-    #         self.min_price = self.options.price.first()
-
-    # def save(self, *args, **kwargs):
-    #     super(Product, self).save(*args, **kwargs)
-    #     # animals = ''
-    #     # for pet in self.animal.all():
-    #     #     animals += pet.name
-    #     # self.unique_name = f'{animals} {self.category.name} {self.brand.name} {self.name}'
-    #     self.min_price_options()
-    #     super(Product, self).save()
 
     def product_options(self):
         return self.options.count()
@@ -86,17 +61,12 @@ class Units(models.Model):
         return self.unit_name
 
     class Meta:
-        verbose_name='Еденица измерения'
-        verbose_name_plural='ЕДИНИЦЫ ИЗМЕРЕНИЯ'
+        verbose_name = 'Еденица измерения'
+        verbose_name_plural = 'ЕДИНИЦЫ ИЗМЕРЕНИЯ'
 
 
 class ProductOptions(models.Model):
     """Доступные фасовки для товара(разные фасовки по весу, объёму и тд. ...)"""
-    # UNIT_CHOICES = (
-    #     (0, 'шт.',),
-    #     # (1, 'литр'),
-    #     (1, 'на вес',),
-    # )
     article_number = models.CharField(verbose_name='Артикул товара', max_length=200, unique=True, blank=True, null=True)
     product = models.ForeignKey('Product', related_name='options', on_delete=models.CASCADE, verbose_name='Варианты')
     partial = models.BooleanField(verbose_name='На развес', default=False)
@@ -298,6 +268,9 @@ class Order(models.Model):
 
     def __str__(self):
         return f'{self.customer.customer_name, self.customer.phone_number, self.paid}'
+
+    def get_total_cost(self):
+        pass
 
 
 class OrderItem(models.Model):

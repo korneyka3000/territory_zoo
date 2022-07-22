@@ -42,7 +42,7 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
     filterset_fields = ('animal', 'category',)
     search_fields = ('name',)
-    ordering_fields = ('name', 'min_price', 'popular', 'minimal_price')
+    ordering_fields = ('name', 'min_price', 'popular',)
     ordering = ('name',)
 
     def list(self, request, *args, **kwargs):
@@ -52,7 +52,7 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
         return response
 
     def get_queryset(self):
-        queryset = Product.objects.all().annotate(minimal_price=Min('options__price', filter=Q(options__partial=False)))
+        queryset = Product.objects.all().annotate(min_price=Min('options__price', filter=Q(options__partial=False)))
         brands = self.request.query_params.getlist('brand')
         if brands:
             queryset = queryset.filter(brand_id__in=brands)
@@ -128,7 +128,9 @@ class OrderViewSet(mixins.CreateModelMixin, mixins.ListModelMixin,
     permission_classes = (IsAuthenticated,)
 
     def create(self, request, *args, **kwargs):
-        pass
+        print(request.data)
+        print(self)
+        return Response('hi thank you')
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())

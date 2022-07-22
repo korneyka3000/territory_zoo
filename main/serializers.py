@@ -28,10 +28,11 @@ class ProductSerializer(serializers.ModelSerializer):
     options = ProductOptionsSerializer(many=True, read_only=True)
     images = ProductImageSerializer(many=True, read_only=True)
     # minimal_price = serializers.DecimalField(max_digits=6, decimal_places=2)
+    chosen_option = serializers.IntegerField(default=None)
 
     class Meta:
         model = Product
-        fields = ('id', 'name', 'animal', 'brand', 'category', 'options', 'images',
+        fields = ('id', 'name', 'animal', 'brand', 'category', 'options', 'chosen_option', 'images',
                   'description', 'features', 'composition', 'additives', 'analysis',)# 'minimal_price',)
         depth = 1
 
@@ -104,4 +105,4 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ('customer', 'paid', 'items')
+        fields = ('customer', 'paid', 'items',)
