@@ -28,7 +28,7 @@ urlpatterns = [
     path("api_schema/", get_schema_view(title="API SCHEMA", description="Guide to Territory_Zoo API"),
          name="api_schema"),
     path('docs/', TemplateView.as_view(template_name='docs.html',
-                                             extra_context={'schema_url': 'api_schema'}), name='swagger-ui'),
+                                       extra_context={'schema_url': 'api_schema'}), name='swagger-ui'),
     path('admin/', admin.site.urls),
     path('', include('main.urls')),
     path('ckeditor/', include('ckeditor_uploader.urls')),
