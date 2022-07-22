@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin, GroupAdmin
+from django.contrib.auth.models import Group, User
 from django.db import models
 from django.forms import TextInput
 from django.http import HttpResponse
@@ -9,6 +11,9 @@ from .models import Product, Brand, Animal, Category, ProductOptions, ProductIma
 from .resources import ProductAdminResource, AnimalAdminResource, BrandAdminResource
 
 admin.site.site_header = 'Территория ZOO'  # Надпись в админке сайта
+
+
+# admin.site = MyAdminSite()
 
 
 class ProductImageInline(admin.TabularInline):
@@ -155,26 +160,34 @@ class InfoShopAdmin(admin.ModelAdmin):
 
 @admin.register(Consultation)
 class ConsultationAdmin(admin.ModelAdmin):
-    list_display = ('name', 'phone',)
-    list_display_links = ('name', 'phone',)
+    """Консультация"""
+    list_display = 'name', 'phone', 'date_added',
+    list_display_links = 'name',
+    search_fields = 'name', 'phone',
+    list_filter = 'date_added',
 
 
 # @admin.register(Order)
 class OrderInlineAdmin(admin.TabularInline):
+    """Заказы"""
     model = Order
+    extra = 0
 
 
 # @admin.register(OrderItem)
 class OrderItemInlineAdmin(admin.TabularInline):
+    """Товар в заказе"""
     model = OrderItem
     extra = 0
 
+
 @admin.register(Customer)
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ('customer_name', 'phone_number',)
-    list_display_links = ('customer_name',)
-    # list_editable = ('customer_name', 'phone_number',)
-    list_filter = ('customer_name', 'phone_number',)
+    """Покупатель"""
+    formfield_overrides = {models.TextField: {'widget': TextInput(attrs={'size': '30'})}}
+    list_display = 'customer_name', 'phone_number',
+    list_display_links = 'customer_name',
+    list_filter = 'customer_name', 'phone_number',
     list_per_page = 20
     inlines = [OrderInlineAdmin]
 
@@ -182,9 +195,27 @@ class CustomerAdmin(admin.ModelAdmin):
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     list_display = ('customer', 'paid', 'created',)
-    # list_display_links = ('paid', 'created',)
     list_editable = ('paid',)
     readonly_fields = ('created',)
     list_filter = ('customer', 'paid', 'created',)
     list_per_page = 20
     inlines = [OrderItemInlineAdmin]
+
+
+
+# admin.site.register(Group, GroupAdmin)
+# admin.site.register(User, UserAdmin)
+#
+# """Сортировка полей в Admin-Django"""
+# admin.site.register(Product)
+# admin.site.register(ProductOptions)
+# admin.site.register(Animal)
+# admin.site.register(Brand)
+# admin.site.register(Category)
+# admin.site.register(Order)
+# admin.site.register(Consultation)
+# admin.site.register(Customer)
+# admin.site.register(Comments)
+# admin.site.register(InfoShop)
+
+
