@@ -27,12 +27,12 @@ class ProductImageSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     options = ProductOptionsSerializer(many=True, read_only=True)
     images = ProductImageSerializer(many=True, read_only=True)
-    # minimal_price = serializers.DecimalField(max_digits=6, decimal_places=2)
+    chosen_option = serializers.IntegerField(default=None)
 
     class Meta:
         model = Product
-        fields = ('id', 'name', 'animal', 'brand', 'category', 'options', 'images',
-                  'description', 'features', 'composition', 'additives', 'analysis',)# 'minimal_price',)
+        fields = ('id', 'name', 'animal', 'brand', 'category', 'options', 'chosen_option', 'images',
+                  'description', 'features', 'composition', 'additives', 'analysis',)
         depth = 1
 
     def to_representation(self, instance):
@@ -53,12 +53,10 @@ class BrandSerializer(serializers.ModelSerializer):
 
 
 class AnimalSerializer(serializers.ModelSerializer):
-    # products = ProductSerializer(many=True,read_only=True)
 
     class Meta:
         model = Animal
-        fields = ('id', 'name', 'image',)# 'products')
-        # depth = 3
+        fields = ('id', 'name', 'image',)
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -104,4 +102,4 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ('customer', 'paid', 'items')
+        fields = ('customer', 'paid', 'items',)
