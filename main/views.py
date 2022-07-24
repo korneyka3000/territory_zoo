@@ -1,4 +1,6 @@
 from django.db.models import Prefetch, Count, Avg, Min, Q, Exists, Case, When, F
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from rest_framework import viewsets, generics, mixins
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
@@ -52,11 +54,16 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
         return response
 
     def get_queryset(self):
-        queryset = Product.objects.all().annotate(min_price=Min('options__price', filter=Q(options__partial=False)))
+        # queryset = Product.objects.all().annotate(min_price=Min('options__price', filter=Q(options__partial=False)))
+        queryset = Product.objects.all().select_related('brand', 'category').prefetch_related('images', 'animal', 'options',).annotate(min_price=Min('options__price', filter=Q(options__partial=False)))
         brands = self.request.query_params.getlist('brand')
         if brands:
             queryset = queryset.filter(brand_id__in=brands)
         return queryset
+
+    @method_decorator(cache_page(60 * 60))
+    def dispatch(self, *args, **kwargs):
+        return super(ProductViewSet, self).dispatch(*args, **kwargs)
 
     # def get_object(self):
     #     queryset = self.get_queryset().select_related()
@@ -99,7 +106,7 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class ProductOptionsViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = ProductOptions.objects.filter(is_active=True)
+    queryset = ProductOptions.objects.filter(is_active=True)#.select_related('units')
     serializer_class = ProductOptionsSerializer
 
 

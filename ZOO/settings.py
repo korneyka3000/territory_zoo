@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'rest_framework_swagger',
     'django_filters',
     'ckeditor_uploader',
+    # 'debug_toolbar',
 
     'ckeditor',
     'import_export',
@@ -65,9 +66,10 @@ REDIS_HOST = 'localhost'
 REDIS_PORT = 6379
 REDIS_DB = 1
 MIDDLEWARE = [
+    # 'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    "corsheaders.middleware.CorsMiddleware",
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -155,7 +157,18 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/2",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"
+CACHE_TTL = 60*1
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
 
@@ -233,3 +246,6 @@ CKEDITOR_CONFIGS = {
         'toolbar': 'YourCustomToolbarConfig',
     }
 }
+# INTERNAL_IPS = [
+#     '127.0.0.1',
+# ]
